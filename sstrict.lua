@@ -927,10 +927,12 @@ end
 function api.parseFile(path)
   local f = io.open(path, "r")
   if f then
-    local source = f:read("*all")
+    local source = f:read("*a")
     f:close()
-    api.parse(source, path)
-    return true
+    if source then
+      api.parse(source, path)
+      return true
+    end
   end
   return false
 end
