@@ -1,6 +1,7 @@
 # SUPERSTRICT for LUA
 
-SUPERSTRICT finds undeclared variables and other minor mistakes in your Lua source code as soon as the file is loaded.
+SUPERSTRICT finds undeclared variables and other minor mistakes in your Lua source code through static analysis.
+You do not need to execute the code to detect your mistakes: SUPERSTRICT will check your code during loading.
 Installation of SUPERSTRICT is SUPER easy.
 Just include the "sstrict.lua" file and any subsequent calls to "require","dofile","loadfile" or "loadstring" will be checked through SUPERSTRICT.
 To exclude a part of your source code from validation you can use the "--!strict" command.
