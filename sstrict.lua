@@ -202,7 +202,7 @@ function stx.tableconstructor()
     end
     if k ~= nil then
       if t[k] then
-        api.error("duplicate field in table constructor '"..k.."'")
+        api.error("duplicate field '"..k.."' in table constructor")
       end
       t[k] = true
     end
@@ -426,14 +426,24 @@ function stx.explist()
   return n
 end
 
-function stx.varlist(kind)
+function stx.varlist()
   local n = {}
+  local r = {}
   while true do
     local var = par.expect("ident")
     table.insert(n, var)
     if par.checklist(lookup.varaccess) then
       var = stx.varaccess(var)
+    else
+      for i = 1, #r do
+        if r[i].capture == var.capture and var.capture ~= '_' then
+          api.error("duplicate variable '"..var.capture.."' on the left-hand side")
+        end
+      end
+      table.insert(r, var)
     end
+
+
     if par.check("lparen") or par.check("colon") then
       stx.call(var)
     end
@@ -452,6 +462,11 @@ function stx.namelist(kind)
   local n = {}
   while true do
     local id = par.expect("ident")
+    for i = 1, #n do
+      if n[i].capture == id.capture and id.capture ~= '_' then
+        api.error("duplicate "..kind.." '"..id.capture.."'")
+      end
+    end
     table.insert(n, id)
     if not (par.check("comma") and par.lookahead("ident")) then
       break
@@ -627,7 +642,6 @@ function stx.localdef()
     if par.check("assign") then
       par.nextsym()
       local rhs = stx.explist()
-
       if #lhs < #rhs then
         api.error("too many values in assignment")
       end

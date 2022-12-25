@@ -49,13 +49,20 @@ end
 a = 1, 2 -- too many values on the right-hand side in assignment
 ```
 
-## Duplicate fields in table constructor
+## Duplicate variables, arguments and table fields
 ```Lua
 t =
 { 
   ['a'] = 100,
   a = 100 -- duplicate field 'a' in table constructor
 }
+for b, b in pairs(t) do
+  -- duplicate lvariable 'b'
+end
+c, c = 1, 2 -- duplicate variable 'c'
+function (d, d)
+  -- duplicate argument 'd'
+end
 ```
 
 ## Thanks
