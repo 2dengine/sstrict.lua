@@ -60,7 +60,7 @@ for b, b in pairs(t) do
   -- duplicate lvariable 'b'
 end
 c, c = 1, 2 -- duplicate variable 'c'
-function (d, d)
+function foo(d, d)
   -- duplicate argument 'd'
 end
 ```
