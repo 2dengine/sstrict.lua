@@ -880,12 +880,12 @@ function api.error(what, line)
   if line then
     src = src..":"..line
   end
-  local func = print
   if par.panic and api.panic then
-    src = "\n"..src
-    func = error
+    error("\n"..src..": "..what)
   end
-  func(src..": "..what)
+  if par.warn then
+    print(src..": "..what)
+  end
 end
 
 function api.parse(source, where)
@@ -909,14 +909,21 @@ function api.parse(source, where)
   -- strip comments
   local stream = {}
   local j = 1
-  local q = true
+  local q1 = true
+  local q2 = true
   for _, v in ipairs(lex.tokenize(source, ptokens)) do
-    if v.token == "comment" and v.capture:match("%!strict") then
-      q = not q
+    if v.token == "comment" then
+      if v.capture:match("%!strict") then
+        q1 = not q1
+      end
+      if v.capture:match("%!%!strict") then
+        q2 = not q2
+      end
     end
     if not lookup.padding[ v.token ] then
       stream[j] = v
-      v.panic = q
+      v.panic = q1
+      v.warn = q2
       j = j + 1
     end
   end
@@ -981,7 +988,7 @@ function api.require(rpath, ...)
     table.insert(list, q)
   end
   for _, q in ipairs(list) do
-    q = q:gsub("%?", path):gsub("\\", "/")
+    q = q:gsub("%?", path):gsub("\\", "/"):gsub("//", "/")
     if api.parseFile(q) then
       break
     end
