@@ -1,15 +1,16 @@
-# SUPERSTRICT for LUA
+# Super Strict for LUA
 
 Super Strict is a pure Lua library that finds undeclared variables and other minor mistakes in your source code through static analysis.
 You do not need to execute any code to find your mistakes: Super Strict will check the code during loading.
-Just include the "sstrict.lua" file and any subsequent calls to "require","dofile","loadfile" or "loadstring" will be checked through Super Strict.
+Just require the "sstrict.lua" file and any subsequent calls to "require","dofile","loadfile" or "loadstring" will be checked through Super Strict.
 To exclude a specific Lua file from the being checked just place the "--!strict" line at the top of your source code.
 
-## Installation
-Simply include the sstrict.lua file:
+To instsall Super Strict, simply require the sstrict.lua file:
 ```Lua
 require('sstrict.lua')
 ```
+
+# Examples
 
 ## Undefined and unused variables
 ```Lua
@@ -72,6 +73,5 @@ end
 
 ## Credits
 grump, pgimeno, MrFariator and the rest of the Love2D community
-https://love2d.org/forums/viewtopic.php?f=5&t=90074
 
 sstrict.lua is not related in any way to the strict.lua library
