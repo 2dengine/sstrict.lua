@@ -8,7 +8,7 @@ require('sstrict.lua')
 ```
 To exclude a specific Lua file from the being checked place the "--!strict" line at the top of your source code.
 
-The source code available on [GitHub](https://github.com/2dengine/sstrict) and the official documentation is from [2dengine.com](https://2dengine.com/doc/sstrict.html)
+The source code available on [GitHub](https://github.com/2dengine/sstrict.lua) and the official documentation is from [2dengine.com](https://2dengine.com/doc/sstrict.html)
 
 
 # Examples
