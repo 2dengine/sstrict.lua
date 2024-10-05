@@ -785,29 +785,20 @@ function par.checklist(t)
   return sym and t[ sym.token ]
 end
 
-function par.runop(s, a, b)
-  local r
-  if s == "caret" then
-    r = a^b
-  elseif s == "divide" then
-    r = a/b
-  elseif s == "multiply" then
-    r = a*b
-  elseif s == "percent" then
-    r = a%b
-  elseif s == "plus" then
-    r = a+b
-  elseif s == "minus" then
-    r = a-b
-  elseif s == "cat" then
-    r = a..b
-  end
-  return r
-end
+local runop = {
+  caret = function(a, b) return a^b end,
+  divide = function(a, b) return a/b end,
+  multiply = function(a, b) return a*b end,
+  percent = function(a, b) return a%b end,
+  plus = function(a, b) return a+b end,
+  minus = function(a, b) return a-b end,
+  cat = function(a, b) return a..b end,
+}
 
 function par.runbinop(t, a, b)
   if a and b then
-    local ok, res = pcall(par.runop, t.token, a, b)
+    local func = runop[t.token]
+    local ok, res = pcall(func, a, b)
     if ok then
       return res
     end
