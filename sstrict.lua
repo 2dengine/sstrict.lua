@@ -332,7 +332,7 @@ function stx.expoexp()
   local a = stx.term()
   if par.check("caret") then
     local s = par.nextsym()
-    local b = stx.expoexp()
+    local b = stx.unaryexp()
     a = par.runbinop(s, a, b)
   end
   return a
