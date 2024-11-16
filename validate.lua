@@ -1,4 +1,4 @@
---require("sstrict")
+require("sstrict")
 
 local function try(src, expect, msg)
   local res, err = pcall(loadstring, src)
@@ -23,7 +23,7 @@ try([[_G['undeclared'] = a]], false, "undefined variable 'a'")
 -- var reuse
 try([[local list = {1,2,3} for i, v in ipairs(list) do for i, w in ipairs(list) do end end return list]], false, "variable name 'i' redefinition")
 try([[return function(a) local a = 5 return a end]], false, "variable name 'a' redefinition")
-try([[return function(a) local a, b, a = 2 math.randomseed(a) end]], false, "variable name 'a' redefinition")
+try([[return function(a) local a, b, a = 2 math.randomseed(a) end]], false, "duplicate variable 'a'")
 
 -- empty blocks
 try([[for i = 1, 100 do end]], false, "empty code block")
@@ -46,7 +46,8 @@ try([[return function() io = nil end]], true)
 
 
 -- unused vars
-try([[local function cc() local a, b = os.clock() end]], false, "unused variable 'a'")
+try([[local function cc() local a, _ = os.clock() end]], false, "unused variable 'a'")
+try([[local function cc() local _, b = os.clock() end]], false, "unused variable 'b'")
 try([[local function cc() local a, b = os.clock() return b end]], true)
 
 -- literals
@@ -79,7 +80,7 @@ try([[if 2+2 > 3 then print('ok') end]], false, "constant if/else condition")
 try([[local a = 0 while true do a = a + 1 end return a]], true)
 
 -- table constructor duplicates
-try([[return { ['a'] = 1, a = 1 }]], false, "duplicate field in table constructor 'a'")
-try([[return { [1] = 1, 1 }]], false, "duplicate field in table constructor '1'")
-try([[return { [1+2^3*4%5] = 1, 1,2,3 }]], false, "duplicate field in table constructor '3'")
-try([[return { ['a' .. 4]=1, a4=1 }]], false, "duplicate field in table constructor 'a4'")
+try([[return { ['a'] = 1, a = 1 }]], false, "duplicate field 'a' in table constructor")
+try([[return { [1] = 1, 1 }]], false, "duplicate field '1' in table constructor")
+try([[return { [1+2^3*4%5] = 1, 1,2,3 }]], false, "duplicate field '3' in table constructor")
+try([[return { ['a' .. 4]=1, a4=1 }]], false, "duplicate field 'a4' in table constructor")
