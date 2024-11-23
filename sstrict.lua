@@ -957,41 +957,48 @@ end
 
 local _loadfile = loadfile
 function api.loadfile(path, ...)
-  api.parseFile(path, ...)
+  if not api.parseFile(path) then
+    api.error("could not parse file:"..path)
+  end
   return _loadfile(path, ...)
-end
-
-local _dofile = dofile
-function api.dofile(path, ...)
-  api.parseFile(path)
-  return _dofile(path, ...)
 end
 
 local _require = require
 function api.require(rpath, ...)
   local path = rpath:gsub("%.", "/")
-  local list = {}
+
+  local cpath = package.cpath
+  local ppath = package.path
   if love and love.filesystem then
-    list[1] = love.filesystem.getRequirePath()
-    list[2] = love.filesystem.getSource().."/?.lua"
+    cpath = cpath..";"..love.filesystem.getCRequirePath()
+    ppath = ppath..";"..love.filesystem.getRequirePath()
+    local src = love.filesystem.getSource()
+    ppath = ppath..";"..src.."/?.lua"
+    ppath = ppath..";"..src.."/?/init.lua"
   end
-  for q in string.gmatch(package.path..";", "([^;]+)") do
-    table.insert(list, q)
-  end
-  for _, q in ipairs(list) do
-    q = q:gsub("%?", path):gsub("\\", "/"):gsub("//", "/")
-    if api.parseFile(q) then
+
+  local parsed = false
+  for q in string.gmatch(ppath..";", "([^;]+)") do
+    local p = q:gsub("%?", path):gsub("\\", "/"):gsub("//", "/")
+    if api.parseFile(p) then
+      parsed = true
       break
     end
   end
+  if not parsed then
+    -- todo: check if binary
+    print("could not parse file:"..rpath)
+  end
+
   return _require(rpath, ...)
 end
 
-api.panic = true
+local panic = ...
+api.panic = (panic ~= false)
 
 loadstring = api.loadstring
 loadfile = api.loadfile
-dofile = api.dofile
+dofile = api.loadfile
 require = api.require
 
 return api
