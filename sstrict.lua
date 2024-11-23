@@ -742,7 +742,6 @@ function par.nextsym()
   par.index = par.index + 1
   local new = par.stream[par.index]
   if new then
-    par.panic = new.panic
     par.line = new.line
   end
   return old
@@ -864,18 +863,17 @@ function par.access(k)
   end
 end
 
-
 function api.error(what, line)
   line = line or par.line
   local src = api.where or "?"
   if line then
     src = src..":"..line
   end
-  if par.panic and api.panic then
-    error("\n"..src..": "..what)
+  if api.errors then
+    table.insert(api.errors, src..": "..what)
   end
-  if par.warn then
-    print(src..": "..what)
+  if api.panic then
+    error("\n"..src..": "..what)
   end
 end
 
@@ -889,6 +887,7 @@ function api.parse(source, where)
   end
   
   api.where = where
+  api.errors = {}
 
   -- ignore first line if it starts with #
   source = source:gsub("^#[^\n]\n", "")
@@ -896,25 +895,18 @@ function api.parse(source, where)
   -- quick hack for the string escape problem
   source = source:gsub('([^\\])\\"', '%1 ')
   source = source:gsub("([^\\])\\'", "%1 ")
+  
+  -- skip files starting with --!strict
+  if source:match("^[%s]-%-%-!strict[\n\r]") then
+    return true
+  end
 
   -- strip comments
   local stream = {}
   local j = 1
-  local q1 = true
-  local q2 = true
   for _, v in ipairs(lex.tokenize(source, ptokens)) do
-    if v.token == "comment" then
-      if v.capture:match("%!strict") then
-        q1 = not q1
-      end
-      if v.capture:match("%!%!strict") then
-        q2 = not q2
-      end
-    end
     if not lookup.padding[ v.token ] then
       stream[j] = v
-      v.panic = q1
-      v.warn = q2
       j = j + 1
     end
   end
@@ -934,6 +926,8 @@ function api.parse(source, where)
   end
 
   par.reset(stream)
+
+  return (#api.errors == 0), api.errors[1]
 end
 
 function api.parseFile(path)
@@ -942,23 +936,26 @@ function api.parseFile(path)
     local source = f:read("*a")
     f:close()
     if source then
-      api.parse(source, path)
-      return true
+      return api.parse(source, path)
     end
   end
-  return false
+  return false, "could not parse file:"..path
 end
 
 local _loadstring = loadstring
 function api.loadstring(source, ...)
-  api.parse(source, ...)
+  local ok, err = api.parse(source, ...)
+  if not ok then
+    return nil, err
+  end
   return _loadstring(source, ...)
 end
 
 local _loadfile = loadfile
 function api.loadfile(path, ...)
-  if not api.parseFile(path) then
-    api.error("could not parse file:"..path)
+  local ok, err = api.parseFile(path)
+  if not ok then
+    api.error(err)
   end
   return _loadfile(path, ...)
 end
@@ -980,25 +977,28 @@ function api.require(rpath, ...)
   local parsed = false
   for q in string.gmatch(ppath..";", "([^;]+)") do
     local p = q:gsub("%?", path):gsub("\\", "/"):gsub("//", "/")
-    if api.parseFile(p) then
+    local ok, err = api.parseFile(p)
+    if ok then
       parsed = true
       break
     end
   end
   if not parsed then
     -- todo: check if binary
-    print("could not parse file:"..rpath)
+    print("could not check:"..rpath)
   end
 
   return _require(rpath, ...)
 end
 
-local panic = ...
-api.panic = (panic ~= false)
+--local _, var = ...
+api.panic = true --(var == nil)
 
-loadstring = api.loadstring
-loadfile = api.loadfile
-dofile = api.loadfile
-require = api.require
+--if var == nil then
+  loadstring = api.loadstring
+  loadfile = api.loadfile
+  dofile = api.loadfile
+  require = api.require
+--end
 
 return api
