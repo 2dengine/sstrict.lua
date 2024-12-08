@@ -6,9 +6,11 @@ Just require the "sstrict.lua" file and any subsequent calls to "require","dofil
 ```Lua
 require('sstrict.lua')
 ```
-To exclude a specific Lua file from the being checked place the "--!strict" line at the top of your source code.
+In most cases you don't need to run Super Script in production code.
+You can simply write a script that iterates and checks all of the .lua files in your project.
+To exclude a specific Lua file from being checked place the line "--!strict" at the top of your source code.
 
-The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua) and the official documentation is on [2dengine.com](https://2dengine.com/doc/sstrict.html)
+The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua) and the official documentation is hosted on [2dengine.com](https://2dengine.com/doc/sstrict.html)
 
 
 # Examples
