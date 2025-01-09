@@ -74,7 +74,7 @@ try([[return "житното зърно,"]], true)
 -- assignment values count
 try([[local a,b=1,2,3 return a]], false, "too many values in assignment")
 try([[local a,b,c=1,2 return a]], true)
-try([[local a,b,c=unpack(_G) return a]], true)
+try([[unpack = table.unpack or unpack local a,b,c=unpack(_G) return a]], true)
 
 -- constant condition
 try([[if true then print('ok') end]], false, "constant if/else condition")
