@@ -1,0 +1,14 @@
+name: Validate SuperStrict
+on:
+  workflow_dispatch:
+
+jobs:
+  bash-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Run Bash script
+        run: bash validate.sh
