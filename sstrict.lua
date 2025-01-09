@@ -942,7 +942,7 @@ function api.parseFile(path)
   return false, "could not parse file:"..path
 end
 
-local _loadstring = loadstring
+local _loadstring = load or loadstring
 function api.loadstring(source, ...)
   local ok, err = api.parse(source, ...)
   if not ok then
