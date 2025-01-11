@@ -4,7 +4,7 @@
 Super Strict is a Lua library that finds undeclared variables and other minor mistakes in your source code.
 Super Strict checks your Lua scripts during loading using static analysis.
 
-The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua) and the official documentation is hosted on [2dengine.com](https://2dengine.com/doc/sstrict.html)
+The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua) and the documentation is hosted on [2dengine.com](https://2dengine.com/doc/sstrict.html)
 
 ## Installation
 Super Strict does not depend on third party modules or binaries.
