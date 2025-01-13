@@ -16,7 +16,7 @@ jobs:
           sudo apt -y install lua-filesystem
           sudo apt update
           lua "./.github/workflows/scan.lua"
-          if test -f "./validate.lua"; then
-            lua "./validate.lua"
+          if test -f "./test.lua"; then
+            lua "./test.lua"
           fi
 
