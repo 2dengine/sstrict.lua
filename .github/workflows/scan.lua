@@ -11,7 +11,7 @@ local function scan(path)
       else
         if file:match('%.lua$') then
           print(full)
-          ss.parseFile(full)
+          assert(ss.parseFile(full))
         end
       end
     end
