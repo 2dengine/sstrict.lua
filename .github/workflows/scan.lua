@@ -1,5 +1,5 @@
-lfs = require('lfs')
-require('sstrict')
+local lfs = require('lfs')
+local sstrict = require('sstrict')
 
 function scan(path)
   for file in lfs.dir(path) do
@@ -11,6 +11,7 @@ function scan(path)
       else
         if file:match('%.lua$') then
           print(full)
+          sstrict.parseFile(full)
           dofile(full)
         end
       end
