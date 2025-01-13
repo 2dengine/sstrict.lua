@@ -966,6 +966,7 @@ function api.require(rpath, ...)
 
   local cpath = package.cpath
   local ppath = package.path
+  local love = _G.love
   if love and love.filesystem then
     cpath = cpath..";"..love.filesystem.getCRequirePath()
     ppath = ppath..";"..love.filesystem.getRequirePath()
