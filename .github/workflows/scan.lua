@@ -11,7 +11,6 @@ local function scan(path)
       else
         if file:match('%.lua$') then
           print(full)
-          sstrict.parseFile(full)
           dofile(full)
         end
       end
