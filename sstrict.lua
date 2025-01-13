@@ -942,7 +942,7 @@ function api.parseFile(path)
   return false, "could not parse file:"..path
 end
 
-local _loadstring = load or loadstring
+local _loadstring = _G.load or _G.loadstring
 function api.loadstring(source, ...)
   local ok, err = api.parse(source, ...)
   if not ok then
@@ -951,7 +951,7 @@ function api.loadstring(source, ...)
   return _loadstring(source, ...)
 end
 
-local _loadfile = loadfile
+local _loadfile = _G.loadfile
 function api.loadfile(path, ...)
   local ok, err = api.parseFile(path)
   if not ok then
@@ -960,7 +960,7 @@ function api.loadfile(path, ...)
   return _loadfile(path, ...)
 end
 
-local _require = require
+local _require = _G.require
 function api.require(rpath, ...)
   local path = rpath:gsub("%.", "/")
 
