@@ -2,6 +2,7 @@ lfs = require('lfs')
 require('sstrict')
 
 function scan(path)
+  print('scanning:'..path)
   for file in lfs.dir(path) do
     if file ~= '.' and file ~= '..' then
       local full = path..'/'..file
