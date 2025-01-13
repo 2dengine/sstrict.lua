@@ -1,1 +1,20 @@
+lfs = require('lfs')
+require('sstrict')
 
+function scan(path)
+  for file in lfs.dir(path) do
+    if file ~= '.' and file ~= '..' then
+      local full = path..'/'..file
+      print(full)
+      local attr = lfs.attributes(full)
+      if attr.mode == 'directory' then
+        scan(full)
+      else
+        if name:match('%.lua$') then
+          dofile(full)
+        end
+      end
+    end
+  end
+end
+scan('.')
