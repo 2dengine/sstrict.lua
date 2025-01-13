@@ -14,4 +14,3 @@ jobs:
         run: |
           sudo apt install lua5.3
           lua validate.lua
-        run: echo "Done"
