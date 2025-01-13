@@ -995,11 +995,12 @@ end
 --local _, var = ...
 api.panic = true --(var == nil)
 
---if var == nil then
-  loadstring = api.loadstring
-  loadfile = api.loadfile
-  dofile = api.loadfile
-  require = api.require
---end
+if _G['require'] ~= api.require then
+  local func = load and 'load' or 'loadstring'
+  _G[func] = api.loadstring
+  _G['loadfile'] = api.loadfile
+  _G['dofile'] = api.loadfile
+  _G['require'] = api.require
+end
 
 return api
