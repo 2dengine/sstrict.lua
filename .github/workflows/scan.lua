@@ -10,7 +10,7 @@ function scan(path)
       if attr.mode == 'directory' then
         scan(full)
       else
-        if name:match('%.lua$') then
+        if file:match('%.lua$') then
           dofile(full)
         end
       end
