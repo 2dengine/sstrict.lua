@@ -14,5 +14,6 @@ jobs:
         run: |
           sudo apt -y install lua5.3
           sudo apt -y install lua-filesystem
+          sudo apt update
           lua "./.github/workflows/scan.lua"
 
