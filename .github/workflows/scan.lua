@@ -1,5 +1,5 @@
 local lfs = require('lfs')
-local sstrict = require('sstrict')
+require('sstrict')
 
 local function scan(path)
   for file in lfs.dir(path) do
