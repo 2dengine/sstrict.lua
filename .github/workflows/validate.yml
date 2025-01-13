@@ -14,4 +14,4 @@ jobs:
         run: |
           sudo apt install lua5.3
           sudo apt-get install git-lfs
-          lua validate.lua
+          lua "./github/workflows/scan.lua"
