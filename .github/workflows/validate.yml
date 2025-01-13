@@ -13,4 +13,5 @@ jobs:
       - name: Run Bash script
         run: |
           sudo apt install lua5.3
+          sudo apt-get install git-lfs
           lua validate.lua
