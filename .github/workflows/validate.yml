@@ -13,5 +13,6 @@ jobs:
       - name: Run Bash script
         run: |
           sudo apt install lua5.3
-          sudo apt-get install git-lfs
+          sudo apt-get -y install lua-filesystem
           lua "./.github/workflows/scan.lua"
+
