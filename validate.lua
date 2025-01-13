@@ -1,7 +1,8 @@
 require("sstrict")
 
 local function try(src, expect, msg)
-  local res, err = pcall(loadstring, src)
+  local func = load or loadstring
+  local res, err = pcall(func, src)
   if type(err) ~= "string" then
     err = nil
   end
