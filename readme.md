@@ -1,8 +1,8 @@
 # Super Strict
 
 ## Introduction
-Super Strict is a Lua library (compatible with Lua 5.1, 5.3 and LuaJIT 2.1.17) that finds undeclared variables and other minor mistakes in your source code.
-Super Strict checks your Lua scripts during loading using static analysis.
+Super Strict is a Lua library (compatible with Lua 5.1, 5.2, 5.3 and LuaJIT 2.1.17) that finds undeclared variables and other minor mistakes in your source code.
+Super Strict tests your Lua scripts during loading using static analysis.
 
 The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua) and the documentation is hosted on [2dengine.com](https://2dengine.com/doc/sstrict.html)
 
@@ -17,6 +17,30 @@ require('sstrict.lua')
 In most cases you should not run Super Script in production code.
 Static analysis is CPU intensive and can potentially slow down your scripts.
 A better option is to write a script that iterates and checks all of the .lua files in your project during development.
+Here is a script that recursively scans all .lua files within a specific directory using the LuaFileSystem module:
+
+```
+local lfs = require('lfs')
+local ss = require('sstrict')
+local function scan(path)
+  for file in lfs.dir(path) do
+    if file ~= '.' and file ~= '..' then
+      local full = path..'/'..file
+      local attr = lfs.attributes(full)
+      if attr.mode == 'directory' then
+        scan(full)
+      else
+        if file:match('%.lua$') then
+          print(full)
+          assert(ss.parseFile(full))
+        end
+      end
+    end
+  end
+end
+print('scanning...')
+scan('.')
+```
 To exclude a specific Lua file from being checked place the line "--!strict" at the top of your source code.
 
 ## Examples
