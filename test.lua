@@ -1,8 +1,7 @@
-require("sstrict")
+local sstrict = require("sstrict")
 
 local function try(src, expect, msg)
-  local func = _G.load or _G.loadstring
-  local res, err = pcall(func, src)
+  local res, err = pcall(sstrict.loadstring, src)
   if type(err) ~= "string" then
     err = nil
   end
@@ -69,8 +68,8 @@ end
 ]=], true)
 
 try([[print("a\"b")]], true)
-try([[return "\"житното зърно,"]], true)
-try([[return "житното зърно,"]], true)
+try([[return "\"ABCDE АБВГД"]], true)
+try([[return "ABCDE АБВГД"]], true)
 
 -- assignment values count
 try([[local a,b=1,2,3 return a]], false, "too many values in assignment")
@@ -87,3 +86,5 @@ try([[return { ['a'] = 1, a = 1 }]], false, "duplicate field 'a' in table constr
 try([[return { [1] = 1, 1 }]], false, "duplicate field '1' in table constructor")
 try([[return { [1+2^3*4%5] = 1, 1,2,3 }]], false, "duplicate field '3' in table constructor")
 try([[return { ['a' .. 4]=1, a4=1 }]], false, "duplicate field 'a4' in table constructor")
+
+print('test finished')
