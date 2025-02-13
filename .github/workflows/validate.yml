@@ -1,5 +1,11 @@
-name: Validate SuperStrict
-on: [workflow_dispatch, push, workflow_call]
+name: Validate Lua source code
+
+on:
+  workflow_call:
+    inputs:
+      lua-version:
+        required: true
+        type: string
 
 jobs:
   bash-script:
