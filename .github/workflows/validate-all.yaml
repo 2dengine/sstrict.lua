@@ -1,22 +1,22 @@
-name: Validate
+name: Validate All
 on: [push,workflow_dispatch]
 jobs:
-  call-workflow:
+  call-workflow-5-1:
     uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
     with:
       lua-version: "5.1"
       
-  call-workflow:
+  call-workflow-5-2:
     uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
     with:
       lua-version: "5.2"
       
-  call-workflow:
+  call-workflow-5-3:
     uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
     with:
       lua-version: "5.3"
       
-  call-workflow:
+  call-workflow-5-4:
     uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
     with:
       lua-version: "5.4"
