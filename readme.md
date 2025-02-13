@@ -1,7 +1,7 @@
 # Super Strict
 
 ## Introduction
-Super Strict is a Lua library (compatible with Lua 5.1, 5.2, 5.3 and LuaJIT 2.1.17) that finds undeclared variables and other minor mistakes in your source code.
+Super Strict is a Lua library (compatible with Lua 5.1, 5.2, 5.3 and LuaJIT) that finds undeclared variables and other minor mistakes in your source code.
 Super Strict tests your Lua scripts during loading using static analysis.
 
 The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua) and the documentation is hosted on [2dengine.com](https://2dengine.com/doc/sstrict.html)
@@ -12,6 +12,22 @@ Just require the "sstrict.lua" file and any subsequent calls to "require","dofil
 ```Lua
 require('sstrict.lua')
 ```
+
+## Continuous Integration
+You can use Super Strict to validate all new commits to your GitHub repository.
+Make sure GitHub Actions are enabled for your repository.
+Create a file in your repository titled ".github/workflows/validate.yml" and paste the following code:
+```
+name: Lua Validation
+on: [workflow_dispatch,push]
+jobs:
+  lua-validation:
+    uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
+    with:
+      lua-version: "5.1"
+```
+You may need to change the "lua-version" variable based on your environment (for example, LuaJIT uses 5.1)
+Lastly, go to the "Actions" tab of your repository to confirm that your code has passed the validation successfully.
 
 ## Usage
 In most cases you should not run Super Script in production code.
