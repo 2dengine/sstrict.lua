@@ -8,25 +8,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          repository: '2dengine/sstrict.lua'
-          path: 'sstrict.lua'
-          ref: 'main'
-        
+
       - name: Lua 5.1 Test
         run: |
           sudo apt -y install lua5.1
           sudo apt -y install lua-filesystem
           sudo apt update
-          mkdir "__tmp"
-          #if [ -f "sstrict.lua/.github/workflows/scan.lua" ]; then
-          #  cat "sstrict.lua/.github/workflows/scan.lua" > "./__tmp/scan.lua"
-          #  cat "sstrict.lua/sstrict.lua" > "./__tmp/sstrict.lua"
-          #else
-          #  cat ".github/workflows/scan.lua" > "./__tmp/scan.lua"
-          #  cat ".github/workflows/sstrict.lua" > "./__tmp/sstrict.lua"
-          #fi
-          lua "./__tmp/scan.lua"
+          lua "./.github/workflows/scan.lua"
           if test -f "./test.lua"; then
             lua "./test.lua"
           fi
