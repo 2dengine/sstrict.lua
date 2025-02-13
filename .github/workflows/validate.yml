@@ -1,5 +1,12 @@
 name: Validate SuperStrict
-on: [workflow_dispatch, workflow_call, push]
+on: [workflow_dispatch, push]
+
+on:
+  workflow_call:
+    inputs:
+      config-path:
+        required: true
+        type: string
 
 jobs:
   bash-script:
