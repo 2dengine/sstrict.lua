@@ -1,4 +1,7 @@
 love = love or {}
+jit = jit or {}
+ffi = ffi or {}
+
 local lfs = require('lfs')
 local ss = require('sstrict')
 
