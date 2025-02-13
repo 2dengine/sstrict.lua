@@ -21,7 +21,7 @@ jobs:
           #if [ -f "2dengine/.github/workflows/scan.lua" ]; then
           #  cat "2dengine/.github/workflows/scan.lua"
           #fi
-          lua "2dengine/.github/workflows/scan.lua"
+          lua ".github/workflows/scan.lua"
           if test -f "./test.lua"; then
             lua "./test.lua"
           fi
