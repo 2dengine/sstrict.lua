@@ -1,6 +1,6 @@
-love = love or {}
-jit = jit or {}
-ffi = ffi or {}
+_G.love = {}
+_G.jit = {}
+_G.ffi = {}
 
 local lfs = require('lfs')
 local ss = require('sstrict')
