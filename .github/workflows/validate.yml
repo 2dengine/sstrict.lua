@@ -16,9 +16,6 @@ jobs:
           curl "https://raw.githubusercontent.com/2dengine/sstrict.lua/refs/heads/main/sstrict.lua" -o "./__tmp/sstrict.lua"
           echo -n "package.path=package.path..';./__tmp/?.lua;';" | cat - "./__tmp/scan.lua" > "./__tmp/scan2.lua"
           mv "./__tmp/scan2.lua" "./__tmp/scan.lua"
-          if test -f "./test.lua"; then
-            lua "./test.lua"
-          fi
 
       - name: Lua 5.1 Test
         run: |
@@ -27,6 +24,9 @@ jobs:
           sudo apt update
           lua "./__tmp/scan.lua"
           #lua "./.github/workflows/scan.lua"
+          if test -f "./test.lua"; then
+            lua "./test.lua"
+          fi
           sudo apt remove lua5.1
         
       - name: Lua 5.2 Test
@@ -36,6 +36,9 @@ jobs:
           sudo apt update
           lua "./__tmp/scan.lua"
           #lua "./.github/workflows/scan.lua"
+          if test -f "./test.lua"; then
+            lua "./test.lua"
+          fi
           sudo apt remove lua5.2
 
       - name: Lua 5.3 Test
@@ -45,6 +48,9 @@ jobs:
           sudo apt update
           lua "./__tmp/scan.lua"
           #lua "./.github/workflows/scan.lua"
+          if test -f "./test.lua"; then
+            lua "./test.lua"
+          fi
           sudo apt remove lua5.3
           
       - name: Lua 5.4 Test
@@ -54,4 +60,7 @@ jobs:
           sudo apt update
           lua "./__tmp/scan.lua"
           #lua "./.github/workflows/scan.lua"
+          if test -f "./test.lua"; then
+            lua "./test.lua"
+          fi
           sudo apt remove lua5.4
