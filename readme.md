@@ -15,7 +15,7 @@ require('sstrict.lua')
 
 ## Continuous Integration
 You can use Super Strict to validate all new commits to your GitHub repository.
-Make sure GitHub Actions are enabled for your repository.
+Make sure that GitHub Actions are enabled for your repository.
 Create a file in your repository titled ".github/workflows/validate.yml" and paste the following code:
 ```
 name: Lua Validation
@@ -26,8 +26,9 @@ jobs:
     with:
       lua-version: "5.1"
 ```
-You may need to change the "lua-version" variable based on your environment (for example, LuaJIT uses 5.1)
+You may need to change the "lua-version" variable depending on your environment (for example, LuaJIT uses 5.1)
 Lastly, go to the "Actions" tab of your repository to confirm that your code has passed the validation successfully.
+You can also trigger the validation manually by clicking the "Run Workflow" button.
 
 ## Usage
 In most cases you should not run Super Script in production code.
