@@ -18,14 +18,15 @@ jobs:
           sudo apt -y install lua5.1
           sudo apt -y install lua-filesystem
           sudo apt update
-          if [ -f "sstrict.lua/.github/workflows/scan.lua" ]; then
-            cat "sstrict.lua/.github/workflows/scan.lua" > "./scan.lua"
-            cat "sstrict.lua/sstrict.lua" > "./sstrict.lua"
-          else
-            cat ".github/workflows/scan.lua" > "./scan.lua"
-            cat ".github/workflows/sstrict.lua" > "./sstrict.lua"
-          fi
-          lua "./scan.lua"
+          mkdir "__tmp"
+          #if [ -f "sstrict.lua/.github/workflows/scan.lua" ]; then
+          #  cat "sstrict.lua/.github/workflows/scan.lua" > "./__tmp/scan.lua"
+          #  cat "sstrict.lua/sstrict.lua" > "./__tmp/sstrict.lua"
+          #else
+          #  cat ".github/workflows/scan.lua" > "./__tmp/scan.lua"
+          #  cat ".github/workflows/sstrict.lua" > "./__tmp/sstrict.lua"
+          #fi
+          lua "./__tmp/scan.lua"
           if test -f "./test.lua"; then
             lua "./test.lua"
           fi
