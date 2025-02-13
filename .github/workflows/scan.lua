@@ -1,3 +1,4 @@
+love = love or {}
 local lfs = require('lfs')
 local ss = require('sstrict')
 
@@ -8,7 +9,7 @@ local function scan(path)
       local attr = lfs.attributes(full)
       if attr.mode == 'directory' then
         scan(full)
-      else
+      elseif attr.mode == 'file' then
         if file:match('%.lua$') then
           print(full)
           assert(ss.parseFile(full))
