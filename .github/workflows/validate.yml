@@ -19,7 +19,7 @@ jobs:
           sudo apt -y install lua-filesystem
           sudo apt update
           if [ -f "2dengine/.github/workflows/scan.lua" ]; then
-            cat "2dengine/.github/workflows/scan.lua" > "./scan.lua"
+            cp "2dengine/.github/workflows/scan.lua" > "./scan.lua"
           fi
           lua "./scan.lua"
           if test -f "./test.lua"; then
