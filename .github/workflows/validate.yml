@@ -24,7 +24,7 @@ jobs:
           mv "./__tmp/scan2.lua" "./__tmp/scan.lua"
 
       - name: Lua 5.1 Test
-        if: inputs.lua-version == "5.1"
+        if: ${{ inputs.lua-version == "5.1" }}
         run: |
           sudo apt -y install lua5.1
           sudo apt -y install lua-filesystem
