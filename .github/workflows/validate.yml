@@ -1,8 +1,8 @@
 name: Validate SuperStrict
 on: [workflow_dispatch, push, workflow_call]
 inputs:
-  config-path:
-    required: true
+  lua-version:
+    required: false
     type: string
 
 jobs:
