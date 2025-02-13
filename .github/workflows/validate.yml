@@ -18,7 +18,7 @@ jobs:
           curl "https://raw.githubusercontent.com/2dengine/sstrict.lua/refs/heads/main/.github/workflows/scan.lua" -o "./__tmp/scan.lua"
           curl "https://raw.githubusercontent.com/2dengine/sstrict.lua/refs/heads/main/sscript.lua" -o "./__tmp/sscript.lua"
 
-          sed -i "package.path=package.path..';./__tmp/';" "./__tmp/scan.lua"
+          sed -i "package.path=package.path..';./__tmp/';" ./__tmp/scan.lua
           lua "./__tmp/scan.lua"
           #lua "./.github/workflows/scan.lua"
           if test -f "./test.lua"; then
