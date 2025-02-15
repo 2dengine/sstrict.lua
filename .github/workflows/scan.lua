@@ -17,7 +17,7 @@ local function scan(path)
       elseif attr.mode == 'file' then
         if file:match('%.lua$') then
           print(full)
-          local ok, err = ss.parseFile(src..full)
+          local ok, err = ss.parseFile(full)
           if not ok then
             print(err)
             n = n + 1
