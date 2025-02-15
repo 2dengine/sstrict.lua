@@ -27,6 +27,7 @@ local function scan(path)
     end
   end
 end
+
 print('scanning...')
 scan('.')
 assert(n == 0, n.." errors found")
