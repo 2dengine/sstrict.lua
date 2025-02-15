@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout subject code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Checkout tests
@@ -20,7 +20,10 @@ jobs:
         with:
           repository: 2dengine/sstrict.lua
           path: __tmp
-        #run: |
+
+      - name: Prepare for testing
+        run: |
+          mv "./__tmp/.gibhub/workflows/scan.lua" "./__tmp/scan.lua"
         #  mkdir "__tmp"
         #  curl "https://raw.githubusercontent.com/2dengine/sstrict.lua/refs/heads/main/.github/workflows/scan.lua" -o "./__tmp/scan.lua"
         #  curl "https://raw.githubusercontent.com/2dengine/sstrict.lua/refs/heads/main/sstrict.lua" -o "./__tmp/sstrict.lua"
