@@ -4,6 +4,7 @@ _G.ffi = {}
 
 local lfs = require('lfs')
 local ss = require('sstrict')
+ss.panic = false
 
 local n = 0
 local function scan(path)
