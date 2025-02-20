@@ -21,9 +21,9 @@ jobs:
           repository: 2dengine/sstrict.lua
           path: __tmp
 
-      - name: Prepare for testing
-        run: |
-          mv "./__tmp/.github/workflows/scan.lua" "./__tmp/scan.lua"
+      #- name: Prepare for testing
+        #run: |
+        #  mv "./__tmp/.github/workflows/scan.lua" "./__tmp/scan.lua"
         #  mkdir "__tmp"
         #  curl "https://raw.githubusercontent.com/2dengine/sstrict.lua/refs/heads/main/.github/workflows/scan.lua" -o "./__tmp/scan.lua"
         #  curl "https://raw.githubusercontent.com/2dengine/sstrict.lua/refs/heads/main/sstrict.lua" -o "./__tmp/sstrict.lua"
