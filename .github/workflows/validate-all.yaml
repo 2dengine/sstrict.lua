@@ -3,3 +3,17 @@ on: [push,workflow_dispatch]
 jobs:
   lua:
     uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
+    with:
+      lua-version: '5.1'
+  lua:
+    uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
+    with:
+      lua-version: '5.2'
+  lua:
+    uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
+    with:
+      lua-version: '5.3'
+  lua:
+    uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
+    with:
+      lua-version: '5.4'
