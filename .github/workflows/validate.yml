@@ -36,7 +36,7 @@ jobs:
           sudo apt -y install lua5.1
           sudo apt -y install lua-filesystem
           sudo apt update
-          lua "./__tmp/scan.lua"
+          cd "./__tmp/" && lua "./scan.lua"
           #lua "./.github/workflows/scan.lua"
           if test -f "./test.lua"; then
             lua "./test.lua"
@@ -49,7 +49,7 @@ jobs:
           sudo apt -y install lua5.2
           sudo apt -y install lua-filesystem
           sudo apt update
-          lua "./__tmp/scan.lua"
+          cd "./__tmp/" && lua "./scan.lua"
           #lua "./.github/workflows/scan.lua"
           if test -f "./test.lua"; then
             lua "./test.lua"
@@ -62,7 +62,7 @@ jobs:
           sudo apt -y install lua5.3
           sudo apt -y install lua-filesystem
           sudo apt update
-          lua "./__tmp/scan.lua"
+          cd "./__tmp/" && lua "./scan.lua"
           #lua "./.github/workflows/scan.lua"
           if test -f "./test.lua"; then
             lua "./test.lua"
@@ -75,7 +75,7 @@ jobs:
           sudo apt -y install lua5.4
           sudo apt -y install lua-filesystem
           sudo apt update
-          lua "./__tmp/scan.lua"
+          cd "./__tmp/" && lua "./scan.lua"
           #lua "./.github/workflows/scan.lua"
           if test -f "./test.lua"; then
             lua "./test.lua"
