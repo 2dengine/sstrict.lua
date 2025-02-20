@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       lua-version:
-        required: false
+        required: true
         type: string
 
 jobs:
