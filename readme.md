@@ -41,8 +41,8 @@ Here is what the validation scan looks like:
 	+==========================================================+
 	| 5 files scanned                                          |
 	+==========================================================+
-	| chains/utils/pure/oo.lua:40: undefined variable 'global' |
-	| erchains/utils/pure/oo.lua:41: undefined variable 'test' |
+	| /utils/pure/oo.lua.lua:40: undefined variable 'global'   |
+	| /utils/pure/oo.lua.lua:41: undefined variable 'test'     |
 	+==========================================================+
 	| 2 errors found                                           |
 	+==========================================================+
