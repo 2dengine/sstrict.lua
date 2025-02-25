@@ -28,7 +28,26 @@ jobs:
 ```
 You may need to change the "lua-version" input depending on your environment (for example, LuaJIT uses 5.1)
 Lastly, go to the "Actions" tab of your repository to confirm that your code has passed the validation successfully.
-You can also trigger the validation manually by clicking the "Run Workflow" button.
+Here is what the validation report looks like:
+```
+	+==========================================================+
+	| ✔ /utils/pure/speak.lua                                  |
+	| ✘ /utils/pure/oo.lua                                     |
+	| chains/utils/pure/oo.lua:40: undefined variable 'global' |
+	| erchains/utils/pure/oo.lua:41: undefined variable 'test' |
+	| ✔ /ux/scrollbar.lua                                      |
+	| ✔ /ux/slider.lua                                         |
+	| ✔ /ux/window.lua                                         |
+	+==========================================================+
+	| 195 files scanned                                        |
+	+==========================================================+
+	| chains/utils/pure/oo.lua:40: undefined variable 'global' |
+	| erchains/utils/pure/oo.lua:41: undefined variable 'test' |
+	+==========================================================+
+	| 2 errors found                                           |
+	+==========================================================+
+```
+You can also trigger the validation manually by clicking on the "Run Workflow" button.
 
 ## Usage
 In most cases you should not run Super Script in production code.
