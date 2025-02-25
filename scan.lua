@@ -9,7 +9,7 @@ ss.panic = false
 print('scanning...')
 local maxlength = 60
 local function printr(v, wrap)
-  length = v:len()
+  local length = v:len()
   if wrap then
     -- thanks to rsc from https://stackoverflow.com/questions/25527048
     local chunk = maxlength - 4
