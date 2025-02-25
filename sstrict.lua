@@ -927,7 +927,7 @@ function api.parse(source, where)
 
   par.reset(stream)
 
-  return (#api.errors == 0), api.errors[1]
+  return (#api.errors == 0), api.errors
 end
 
 function api.parseFile(path)
