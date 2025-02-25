@@ -35,19 +35,23 @@ end
 print('scanning...')
 scan('.')
 
-local scanned = checked..' files scanned'
-local maxlength = scanned:len()
-for _, v in ipairs(errors) do
-  maxlength = math.max(maxlength, v:len())
-end
-print(string.rep("=", maxlength + 2))
-print(' '..scanned)
-if #errors > 0 then
-  print(string.rep("=", maxlength + 2))
-  for _, v in ipairs(errors) do
-    print(' '..v)
+local maxlength = 60
+local function printr(v)
+  if v:len() > maxlength then
+    v = v:sub(-(maxlength - 4))
   end
+  print('| '..v..string.rep(" ", maxlength - v:len() - 4).." |")
 end
-print(string.rep("=", maxlength + 2))
+local row = "+"..string.rep("=", maxlength - 2).."+"
+print(row)
+printr(checked..' files scanned')
+print(row)
+if #errors > 0 then
+  for _, v in ipairs(errors) do
+    printr(v)
+  end
+  print(row)
+end
+printr(#errors.." errors found")
+print(row)
 assert(#errors == 0, #errors..' errors found')
-print('all done')
