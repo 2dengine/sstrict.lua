@@ -7,7 +7,7 @@ local ss = require('sstrict')
 ss.panic = false
 
 local checked = 0
-local nerrors = 0
+local errors = {}
 local function scan(path)
   for file in lfs.dir(path) do
     if file ~= '.' and file ~= '..' then
@@ -22,7 +22,9 @@ local function scan(path)
           local ok, err = ss.parseFile(full)
           if not ok then
             print(err)
-            nerrors = nerrors + 1
+            for _, v in ipairs(err) do
+              table.insert(errors, v)
+            end
           end
         end
       end
@@ -32,6 +34,19 @@ end
 
 print('scanning...')
 scan('.')
-print("scanned:"..checked)
-assert(nerrors == 0, "errors:"..nerrors)
+
+local maxlength = 0
+for _, v in ipairs(errors) do
+  maxlength = math.max(maxlength, v:len())
+end
+print(string.rep("=", maxlength + 4))
+print(checked..' files scanned')
+if #errors > 0 then
+  print(string.rep("=", maxlength + 4))
+  for _, v in ipairs(errors) do
+    print(v)
+  end
+end
+print(string.rep("=", maxlength + 4))
+assert(#errors == 0, #errors..' errors found')
 print('all done')
