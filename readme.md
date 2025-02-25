@@ -33,13 +33,13 @@ Here is what the validation scan looks like:
 	+==========================================================+
 	| ✔ /utils/pure/speak.lua                                  |
 	| ✘ /utils/pure/oo.lua                                     |
-	| chains/utils/pure/oo.lua:40: undefined variable 'global' |
-	| erchains/utils/pure/oo.lua:41: undefined variable 'test' |
+	| /utils/pure/oo.lua:40: undefined variable 'global'       |
+	| /utils/pure/oo.lua:41: undefined variable 'test'         |
 	| ✔ /ux/scrollbar.lua                                      |
 	| ✔ /ux/slider.lua                                         |
 	| ✔ /ux/window.lua                                         |
 	+==========================================================+
-	| 195 files scanned                                        |
+	| 5 files scanned                                          |
 	+==========================================================+
 	| chains/utils/pure/oo.lua:40: undefined variable 'global' |
 	| erchains/utils/pure/oo.lua:41: undefined variable 'test' |
