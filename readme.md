@@ -28,7 +28,7 @@ jobs:
 ```
 You may need to change the "lua-version" input depending on your environment (for example, LuaJIT uses 5.1)
 Lastly, go to the "Actions" tab of your repository to confirm that your code has passed the validation successfully.
-Here is what the validation report looks like:
+Here is what the validation scan looks like:
 ```
 	+==========================================================+
 	| ✔ /utils/pure/speak.lua                                  |
