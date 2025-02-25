@@ -8,12 +8,21 @@ ss.panic = false
 
 print('scanning...')
 local maxlength = 60
-local function printr(v, length)
-  length = length or v:len()
-  if length > maxlength then
-    v = v:sub(-(maxlength - 4))
+local function printr(v, wrap)
+  length = v:len()
+  if wrap then
+    -- thanks to rsc from https://stackoverflow.com/questions/25527048
+    local chunk = maxlength - 4
+    for i = 1, length, chunk do
+      local out = v:sub(i, i + chunk - 1)
+      print('\t| '..out..string.rep(" ", maxlength - out:len() - 4).." |")
+    end
+  else
+    if length > maxlength then
+      v = v:sub(-(maxlength - 4))
+    end
+    print('\t| '..v..string.rep(" ", maxlength - length - 4).." |")
   end
-  print('\t| '..v..string.rep(" ", maxlength - length - 4).." |")
 end
 local row = "\t+"..string.rep("=", maxlength - 2).."+"
 print(row)
@@ -31,12 +40,11 @@ local function scan(path)
         if file:match('%.lua$') then
           checked = checked + 1
           local ok, err = ss.parseFile(full)
-          local out = ((not err or #err == 0) and "✔" or "✘")
-          out = out.." "..full
-          printr(out, full:len() + 2)
-          if not ok then
+          local out = checked..". "..full
+          printr(out)
+          if not ok and err then
             for _, v in ipairs(err) do
-              printr(v)
+              printr(v, true)
               table.insert(errors, v)
             end
           end
@@ -53,7 +61,7 @@ printr(checked..' files scanned')
 print(row)
 if #errors > 0 then
   for _, v in ipairs(errors) do
-    printr(v)
+    printr(v, true)
   end
   print(row)
 end
