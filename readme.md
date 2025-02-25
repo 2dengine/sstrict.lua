@@ -31,13 +31,13 @@ Lastly, go to the "Actions" tab of your repository to confirm that your code has
 Here is what the validation scan looks like:
 ```
 	+==========================================================+
-	| ✔ /utils/pure/speak.lua                                  |
-	| ✘ /utils/pure/oo.lua                                     |
+	| 1. /utils/pure/speak.lua                                 |
+	| 2. /utils/pure/oo.lua                                    |
 	| /utils/pure/oo.lua:40: undefined variable 'global'       |
 	| /utils/pure/oo.lua:41: undefined variable 'test'         |
-	| ✔ /ux/scrollbar.lua                                      |
-	| ✔ /ux/slider.lua                                         |
-	| ✔ /ux/window.lua                                         |
+	| 3. /ux/scrollbar.lua                                     |
+	| 4. /ux/slider.lua                                        |
+	| 5. /ux/window.lua                                        |
 	+==========================================================+
 	| 5 files scanned                                          |
 	+==========================================================+
