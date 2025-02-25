@@ -6,6 +6,18 @@ local lfs = require('lfs')
 local ss = require('sstrict')
 ss.panic = false
 
+print('scanning...')
+local maxlength = 60
+local function printr(v, length)
+  length = length or v:len()
+  if length > maxlength then
+    v = v:sub(-(maxlength - 4))
+  end
+  print('\t| '..v..string.rep(" ", maxlength - length - 4).." |")
+end
+local row = "\t+"..string.rep("=", maxlength - 2).."+"
+print(row)
+
 local checked = 0
 local errors = {}
 local function scan(path)
@@ -17,12 +29,13 @@ local function scan(path)
         scan(full)
       elseif attr.mode == 'file' then
         if file:match('%.lua$') then
-          print(full)
           checked = checked + 1
           local ok, err = ss.parseFile(full)
+          local out = ((not err or #err == 0) and "\xE2\x9C\x94" or " ")
+          printr(out.." "..full, full:len() + 2)
           if not ok then
-            print(err)
             for _, v in ipairs(err) do
+              printr(v)
               table.insert(errors, v)
             end
           end
@@ -32,17 +45,8 @@ local function scan(path)
   end
 end
 
-print('scanning...')
 scan('.')
 
-local maxlength = 60
-local function printr(v)
-  if v:len() > maxlength then
-    v = v:sub(-(maxlength - 4))
-  end
-  print('| '..v..string.rep(" ", maxlength - v:len() - 4).." |")
-end
-local row = "+"..string.rep("=", maxlength - 2).."+"
 print(row)
 printr(checked..' files scanned')
 print(row)
