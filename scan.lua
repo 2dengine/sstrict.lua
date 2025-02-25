@@ -31,7 +31,7 @@ local function scan(path)
         if file:match('%.lua$') then
           checked = checked + 1
           local ok, err = ss.parseFile(full)
-          local out = ((not err or #err == 0) and "✓" or " ")
+          local out = ((not err or #err == 0) and "✔" or "✘")
           out = out.." "..full
           printr(out, full:len() + 2)
           if not ok then
