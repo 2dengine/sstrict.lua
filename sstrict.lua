@@ -444,7 +444,7 @@ function stx.varlist()
     end
 
 
-    if par.check("lparen") or par.check("colon") then
+    if par.check("lparen") or par.check("lbracket") or par.check("colon") then
       stx.call(var)
     end
     if not par.check("comma") then
@@ -931,6 +931,7 @@ function api.parse(source, where)
 end
 
 function api.parseFile(path)
+  path = path:gsub("\\", "/"):gsub("//", "/")
   local f = io.open(path, "r")
   if f then
     local source = f:read("*a")
@@ -977,7 +978,7 @@ function api.require(rpath, ...)
 
   local parsed = false
   for q in string.gmatch(ppath..";", "([^;]+)") do
-    local p = q:gsub("%?", path):gsub("\\", "/"):gsub("//", "/")
+    local p = q:gsub("%?", path)
     local ok, err = api.parseFile(p)
     if ok then
       parsed = true

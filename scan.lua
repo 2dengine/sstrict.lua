@@ -7,25 +7,8 @@ local ss = require('sstrict')
 ss.panic = false
 
 print('scanning...')
-local maxlength = 60
-local function printr(v, wrap)
-  local length = v:len()
-  if wrap then
-    -- thanks to rsc from https://stackoverflow.com/questions/25527048
-    local chunk = maxlength - 4
-    for i = 1, length, chunk do
-      local out = v:sub(i, i + chunk - 1)
-      print('\t| '..out..string.rep(" ", maxlength - out:len() - 4).." |")
-    end
-  else
-    if length > maxlength then
-      v = v:sub(-(maxlength - 4))
-    end
-    print('\t| '..v..string.rep(" ", maxlength - length - 4).." |")
-  end
-end
-local row = "\t+"..string.rep("=", maxlength - 2).."+"
-print(row)
+
+print('\n')
 
 local checked = 0
 local errors = {}
@@ -41,13 +24,16 @@ local function scan(path)
           checked = checked + 1
           local ok, err = ss.parseFile(full)
           local out = checked..". "..full
-          printr(out)
           if not ok and err then
             for _, v in ipairs(err) do
-              printr(v, true)
+              --print(v)
               table.insert(errors, v)
             end
           end
+          if n > 0 then
+            out = out..' ('..n..' errors)'
+          end
+          print(out)
         end
       end
     end
@@ -56,15 +42,15 @@ end
 
 scan('.')
 
-print(row)
-printr(checked..' files scanned')
-print(row)
+print('\n')
+print(checked..' files scanned')
+print('\n')
 if #errors > 0 then
   for _, v in ipairs(errors) do
-    printr(v, true)
+    print(v)
   end
-  print(row)
+  print('\n')
 end
-printr(#errors.." errors found")
-print(row)
+print(#errors.." errors found")
+print('\n')
 assert(#errors == 0, #errors..' errors found')
