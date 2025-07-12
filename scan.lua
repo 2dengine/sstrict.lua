@@ -28,6 +28,7 @@ local function scan(path)
             for _, v in ipairs(err) do
               --print(v)
               table.insert(errors, v)
+              n = n + 1
             end
           end
           if n > 0 then
