@@ -24,6 +24,7 @@ local function scan(path)
           checked = checked + 1
           local ok, err = ss.parseFile(full)
           local out = checked..". "..full
+          local n = 0
           if not ok and err then
             for _, v in ipairs(err) do
               --print(v)
