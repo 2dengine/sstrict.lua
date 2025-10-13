@@ -14,6 +14,36 @@ Just require the "sstrict.lua" file and any subsequent calls to "require","dofil
 require('sstrict.lua')
 ```
 
+## Usage
+In most cases you should not run Super Script in production code.
+Static analysis is CPU intensive and can potentially slow down your scripts.
+A better option is to write a script that iterates and checks all of the .lua files in your project during development.
+Here is a script that recursively scans all .lua files within a specific directory using the LuaFileSystem module:
+
+```
+local lfs = require('lfs')
+local ss = require('sstrict')
+local function scan(path)
+  for file in lfs.dir(path) do
+    if file ~= '.' and file ~= '..' then
+      local full = path..'/'..file
+      local attr = lfs.attributes(full)
+      if attr.mode == 'directory' then
+        scan(full)
+      else
+        if file:match('%.lua$') then
+          print(full)
+          assert(ss.parseFile(full))
+        end
+      end
+    end
+  end
+end
+print('scanning...')
+scan('.')
+```
+To exclude a specific Lua file from being checked place the line "--!strict" at the top of your source code.
+
 ## Examples
 
 ### Undefined and unused variables
@@ -105,36 +135,6 @@ Here is what the validation scan looks like:
 2 errors found
 ```
 You can also trigger the validation manually by clicking on the "Run Workflow" button.
-
-## Usage
-In most cases you should not run Super Script in production code.
-Static analysis is CPU intensive and can potentially slow down your scripts.
-A better option is to write a script that iterates and checks all of the .lua files in your project during development.
-Here is a script that recursively scans all .lua files within a specific directory using the LuaFileSystem module:
-
-```
-local lfs = require('lfs')
-local ss = require('sstrict')
-local function scan(path)
-  for file in lfs.dir(path) do
-    if file ~= '.' and file ~= '..' then
-      local full = path..'/'..file
-      local attr = lfs.attributes(full)
-      if attr.mode == 'directory' then
-        scan(full)
-      else
-        if file:match('%.lua$') then
-          print(full)
-          assert(ss.parseFile(full))
-        end
-      end
-    end
-  end
-end
-print('scanning...')
-scan('.')
-```
-To exclude a specific Lua file from being checked place the line "--!strict" at the top of your source code.
 
 
 ## Credits
