@@ -3,6 +3,7 @@
 ## Introduction
 Super Strict is a Lua library (compatible with Lua 5.1, 5.2, 5.3 and LuaJIT) that finds undeclared variables and other minor mistakes in your source code.
 Super Strict tests your Lua scripts during loading using static analysis.
+Super Strict is very secure because it can be used without downloading, installing or running any pre-compiled binaries.
 
 The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua) and the documentation is hosted on [2dengine.com](https://2dengine.com/doc/sstrict.html)
 
@@ -30,22 +31,17 @@ You may need to change the "lua-version" input depending on your environment (fo
 Lastly, go to the "Actions" tab of your repository to confirm that your code has passed the validation successfully.
 Here is what the validation scan looks like:
 ```
-	+==========================================================+
-	| 1. /utils/pure/speak.lua                                 |
-	| 2. /utils/pure/oo.lua                                    |
-	| /utils/pure/oo.lua:40: undefined variable 'global'       |
-	| /utils/pure/oo.lua:41: undefined variable 'test'         |
-	| 3. /ux/scrollbar.lua                                     |
-	| 4. /ux/slider.lua                                        |
-	| 5. /ux/window.lua                                        |
-	+==========================================================+
-	| 5 files scanned                                          |
-	+==========================================================+
-	| /utils/pure/oo.lua.lua:40: undefined variable 'global'   |
-	| /utils/pure/oo.lua.lua:41: undefined variable 'test'     |
-	+==========================================================+
-	| 2 errors found                                           |
-	+==========================================================+
+1. /utils/pure/speak.lua
+2. /utils/pure/oo.lua
+/utils/pure/oo.lua:40: undefined variable 'global'
+/utils/pure/oo.lua:41: undefined variable 'test'
+3. /ux/scrollbar.lua
+4. /ux/slider.lua
+5. /ux/window.lua
+
+5 files scanned
+
+2 errors found
 ```
 You can also trigger the validation manually by clicking on the "Run Workflow" button.
 
