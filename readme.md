@@ -9,9 +9,9 @@ The source code is available on [GitHub](https://github.com/2dengine/sstrict.lua
 
 ## Installation
 Super Strict does not depend on third party modules or binaries.
-Just require the "sstrict.lua" file and any subsequent calls to "require","dofile","loadfile" or "loadstring" will be checked through Super Strict.
+Just include the "sstrict.lua" file and any subsequent calls to "require","dofile","loadfile" or "loadstring" will be checked through Super Strict.
 ```Lua
-require('sstrict.lua')
+require('sstrict')
 ```
 
 ## Usage
