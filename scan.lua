@@ -1,6 +1,6 @@
-_G.love = {}
-_G.jit = {}
-_G.ffi = {}
+_G.love = _G.love or {}
+_G.jit = _G.jit or {}
+_G.ffi = _G.ffi or {}
 
 local lfs = require('lfs')
 local ss = require('sstrict')
@@ -42,7 +42,7 @@ local function scan(path)
   end
 end
 
-scan('.')
+scan(arg[1] or '.')
 
 print('\n')
 print(checked..' files scanned')
