@@ -1,10 +1,10 @@
---[[
-This file is part of the Super Strict library.
-https://2dengine.com/doc/sstrict.html
+--[[!
+Super Strict for Lua
+
+Copyright (c) 2021 2dengine LLC
+https://2dengine.com/
 
 MIT License
-
-Copyright (c) 2021 2dengine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -935,6 +935,10 @@ function api.parse(source, where)
     if not lookup.padding[ v.token ] then
       stream[j] = v
       j = j + 1
+    --else
+      --if v.capture:find("[Tt][Oo][Dd][Oo][^%a]") then
+        --api.error("detected 'todo' in comment", v.line)
+      --end
     end
   end
 

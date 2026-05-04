@@ -42,7 +42,7 @@ end
 print('scanning...')
 scan('.')
 ```
-To exclude a specific Lua file from being checked place the line "--!strict" at the top of your source code.
+To exclude a specific Lua file from being checked by SuperStrict place the line "--!strict" at the top of your source code.
 
 ## Examples
 
@@ -56,6 +56,8 @@ function bar(a, b)
   return a + b
 end
 ```
+Most of the time, you should keep the global variables in your Lua code to a minimum.
+If you need to assign a new global variable without upsetting SuperStrict, please use the following syntax: `_G.a = {}`
 
 ### Redefinition of variable names
 ```Lua
@@ -65,6 +67,8 @@ for i = 1, 10 do
   end
 end
 ```
+To suppress the "redefinition" warning, please label your variables using the underscore ("_") symbol.
+The underscore ("_") symbol can also be used to label unused return values: `local _, b = foo()`
 
 ### Empty and unnecessary code blocks
 ```Lua
