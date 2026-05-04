@@ -50,6 +50,7 @@ To exclude a specific Lua file from being checked by SuperStrict place the line 
 ```Lua
 function foo()
   a = 5 -- undefined variable 'a'
+  -- _G.a = 5
 end
 ```
 Most of the time, you should keep the global variables in your Lua code to a minimum.
@@ -63,6 +64,7 @@ function bar(a, b)
 end
 function buzz(a, b)
   local a, b = bar() -- unused variable 'a'
+  -- local _, b = bar()
   return b
 end
 ```
@@ -71,8 +73,9 @@ The underscore (`_`) symbol can be used to label unused variables: `local _, b =
 ### Redefinition of variable names
 ```Lua
 for i = 1, 10 do
-  for i = 1, 10 do
-    -- variable name 'i' redefinition
+  for i = 1, 10 do -- variable name 'i' redefinition
+  -- for _ = 1, 10 do
+    print(i)
   end
 end
 ```
