@@ -53,11 +53,16 @@ function foo()
 end
 function bar(a, b)
   local c = a + b -- unused variable 'c'
-  return a + b
+  return a, b
+end
+function buzz(a, b)
+  local a, b = bar() -- unused variable 'a'
+  return b
 end
 ```
 Most of the time, you should keep the global variables in your Lua code to a minimum.
 If you need to assign a new global variable without upsetting SuperStrict, please use the following syntax: `_G.a = {}`
+The underscore (`_`) symbol can be used to label unused variables: `local _, b = bar()`
 
 ### Redefinition of variable names
 ```Lua
@@ -67,8 +72,7 @@ for i = 1, 10 do
   end
 end
 ```
-To suppress the "redefinition" warning, please label your variables using the underscore (`_`) symbol.
-The underscore (`_`) symbol can also be used to label unused return values: `local _, b = foo()`
+To suppress the "redefinition" warning, please use the underscore (`_`) symbol: `for _ = 1, 10 do`
 
 ### Empty and unnecessary code blocks
 ```Lua
