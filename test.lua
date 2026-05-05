@@ -90,6 +90,8 @@ try([[return { ['a' .. 4]=1, a4=1 }]], false, "duplicate field 'a4' in table con
 try([[return .0123456789012345678]], false, "invalid number precision: .0123456789012345678")
 try([[return .012345678901234567]], false, "invalid number precision: .012345678901234567")
 try([[return .01234567890123456]], false, "invalid number precision: .01234567890123456")
+try([[return 9876543210.9876543]], false, "invalid number precision: 9876543210.9876543")
 try([[return .0123456789012345]], true)
+try([[return 987654321.0123456]], true)
 
 print('test finished')
