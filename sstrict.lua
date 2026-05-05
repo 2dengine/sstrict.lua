@@ -336,7 +336,7 @@ function stx.term()
     if t == "number" then
       n = tonumber(q.capture)
       -- check if the number is too large
-      if n + 1 == n then
+      if n and n + 1 == n then
         api.error("invalid number value: "..q.capture)
       end
       -- check for too much precision
