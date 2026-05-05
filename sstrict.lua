@@ -25,6 +25,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]
 
+local precision = 0
+while true do
+  local x = 1 + 10^(-precision)
+  if x == 1 then
+    break
+  end
+  precision = precision + 1
+end
+
 local tokens =
 {
   -- number
@@ -326,6 +335,18 @@ function stx.term()
     local t = q.token
     if t == "number" then
       n = tonumber(q.capture)
+      -- check if the number is too large
+      if n + 1 == n then
+        api.error("invalid number value: "..q.capture)
+      end
+      -- check for too much precision
+      local int, frac = q.capture:match("^%-?([0-9]*)%.([0-9]*)$")
+      if int and frac then
+        if #int + #frac > precision then
+          api.error("invalid number precision: "..q.capture)
+        end
+      end
+
     elseif t == "true" then
       n = true
     elseif t == "false" then
