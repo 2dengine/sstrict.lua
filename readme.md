@@ -123,9 +123,9 @@ end
 ### Invalid precision
 ```Lua
 local n = .01234567890123456 -- invalid number precision: .01234567890123456
-local n = 9876543210.9876543 -- invalid number precision: 01234567890.123456
+local n = 9876543210.9876543 -- invalid number precision: 9876543210.9876543
 n = .0123456789012345
-n = 987654321.0123456
+n = 9876543210.987654
 ```
 Number precision may vary depending on how your Lua interpreter the compiled.
 For 64-bit versions of Lua, the precision is about 15-16 digits.
