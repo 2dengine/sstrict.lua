@@ -123,7 +123,7 @@ end
 ### Invalid precision
 ```Lua
 local n = .01234567890123456 -- invalid number precision: .01234567890123456
-local n = 9876543210.9876543 -- invalid number precision: 9876543210.9876543
+n = 9876543210.9876543 -- invalid number precision: 9876543210.9876543
 n = .0123456789012345
 n = 9876543210.987654
 ```
