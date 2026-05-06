@@ -127,9 +127,9 @@ local n = 9876543210.9876543 -- invalid number precision: 9876543210.9876543
 n = .0123456789012345
 n = 9876543210.987654
 ```
-Number precision may vary depending on how your Lua interpreter the compiled.
+Numeric precision may vary depending on how your Lua interpreter was compiled.
 For 64-bit versions of Lua, the precision is about 15-16 digits.
-Please note that precision is determined by the total significant digits, not just digits after the decimal point.
+Please note that numeric precision is determined by the total significant digits, not just digits after the decimal point.
 
 ## Continuous Integration
 Super Strict provides a reusable workflow that allows you to validate all new commits pushed to your GitHub repository.
