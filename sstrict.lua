@@ -916,7 +916,7 @@ function par.access(k)
 end
 
 --- Logs the mistake and raises an error when the panic option is enabled.
--- @tparam string source Error message
+-- @tparam string what Error message
 -- @tparam[opt] string line Source code line
 function api.error(what, line)
   line = line or par.line
