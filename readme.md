@@ -17,7 +17,23 @@ require('sstrict')
 ## Usage
 In most cases you should not run Super Script in production code.
 Static analysis is CPU intensive and can potentially slow down your scripts.
-A better option is to write a script that iterates and checks all of the .lua files in your project during development.
+
+### The "parseFile" Function
+Here is how to scan your Lua script files for mistakes using the "parseFile" function:
+```Lua
+local ss = require('sstrict')
+ss.panic = false
+local ok, err = ss.parseFile('/test.lua')
+if not ok and err then
+  -- iterate and print errors
+  for i, v in ipairs(err) do
+    print(v)
+  end
+end
+```
+Please note that the "parseFile" function only looks for mistakes in the syntax, but does not actually execute any Lua code.
+
+Another option is to write a script that iterates and checks all of the .lua files in your project during development.
 Here is a script that recursively scans all .lua files within a specific directory using the LuaFileSystem module:
 
 ```
@@ -42,7 +58,58 @@ end
 print('scanning...')
 scan('.')
 ```
+
+### Command Line
+Super Strict can run from the command line too:
+```Bash
+sudo apt install lua5.1
+lua5.1 sstrict.lua -ss speak.lua oo.lua /ux/scrollbar.lua /ux/slider.lua /ux/window.lua
+```
+The `-ss` argument is followed by the list of files that you want to check.
+
+Here is what the Super Strict output report looks like:
+```
+1. speak.lua
+2. oo.lua
+oo.lua:40: undefined variable 'global'
+oo.lua:41: undefined variable 'test'
+3. /ux/scrollbar.lua
+4. /ux/slider.lua
+5. /ux/window.lua
+
+5 files scanned
+
+2 errors found
+```
+Super Strict exits with status code `0` if the scan was successful or code `1` if any errors were encountered during the scan.
+
+### Continuous Integration
+Super Strict provides a reusable workflow that allows you to validate all new commits pushed to your GitHub repository.
+First, make sure that GitHub Actions are enabled for your repository.
+Create a file in your repository titled ".github/workflows/validate.yml" and paste the following code:
+```
+name: Lua Validation
+on: [workflow_dispatch,push]
+jobs:
+  lua-validation:
+    uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
+    with:
+      lua-version: "5.1"
+```
+You may need to change the "lua-version" input depending on your environment (for example, LuaJIT uses 5.1)
+Lastly, go to the "Actions" tab of your repository to confirm that your code has passed the validation successfully.
+You can also trigger the validation manually by clicking on the "Run Workflow" button.
+
+### Exclusion
 To exclude a specific Lua file from being checked by SuperStrict place the line `--!strict` at the top of your source code.
+```Lua
+--!strict
+a = 5
+if 1 + 1 == 2 then
+  local b = a
+end
+-- this code will be skipped by Super Strict
+```
 
 ## Examples
 
@@ -130,38 +197,6 @@ n = 9876543210.987654
 Numeric precision may vary depending on how your Lua interpreter was compiled.
 For 64-bit versions of Lua, the precision is about 15-16 digits.
 Please note that numeric precision is determined by the total significant digits, not just digits after the decimal point.
-
-## Continuous Integration
-Super Strict provides a reusable workflow that allows you to validate all new commits pushed to your GitHub repository.
-First, make sure that GitHub Actions are enabled for your repository.
-Create a file in your repository titled ".github/workflows/validate.yml" and paste the following code:
-```
-name: Lua Validation
-on: [workflow_dispatch,push]
-jobs:
-  lua-validation:
-    uses: 2dengine/sstrict.lua/.github/workflows/validate.yml@main
-    with:
-      lua-version: "5.1"
-```
-You may need to change the "lua-version" input depending on your environment (for example, LuaJIT uses 5.1)
-Lastly, go to the "Actions" tab of your repository to confirm that your code has passed the validation successfully.
-Here is what the validation scan looks like:
-```
-1. /utils/pure/speak.lua
-2. /utils/pure/oo.lua
-/utils/pure/oo.lua:40: undefined variable 'global'
-/utils/pure/oo.lua:41: undefined variable 'test'
-3. /ux/scrollbar.lua
-4. /ux/slider.lua
-5. /ux/window.lua
-
-5 files scanned
-
-2 errors found
-```
-You can also trigger the validation manually by clicking on the "Run Workflow" button.
-
 
 ## Credits
 grump, pgimeno, MrFariator and the rest of the Love2D community

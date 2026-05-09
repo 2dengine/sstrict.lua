@@ -1045,6 +1045,33 @@ function api.require(rpath, ...)
   return _require(rpath, ...)
 end
 
+-- command line usage
+local errors = {}
+local checked = 0
+for i, v in ipairs(arg) do
+  if v == '-ss' then
+    for j = i + 1, #arg do
+      checked = checked + 1
+      local out = checked..". "..arg[j]
+      print(out)
+      local ok, err = api.parseFile(arg[j])
+      if not ok and err then
+        for _, v in ipairs(err) do
+          print(v)
+          table.insert(errors, v)
+        end
+      end
+    end
+  end
+end
+if checked > 0 then
+  print('')
+  print(checked..' files scanned')
+  print('')
+  print(#errors.." errors found")
+  os.exit(#errors == 0 and 0 or 1, true)
+end
+
 --local _, var = ...
 api.panic = true --(var == nil)
 
