@@ -1056,9 +1056,9 @@ for i, v in ipairs(arg) do
       print(out)
       local ok, err = api.parseFile(arg[j])
       if not ok and err then
-        for _, v in ipairs(err) do
-          print(v)
-          table.insert(errors, v)
+        for _, w in ipairs(err) do
+          print(w)
+          table.insert(errors, w)
         end
       end
     end
