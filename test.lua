@@ -1,5 +1,5 @@
 local sstrict = require("sstrict")
-dsf=453
+
 local function try(src, expect, msg)
   local res, err = pcall(sstrict.loadstring, src)
   if type(err) ~= "string" then

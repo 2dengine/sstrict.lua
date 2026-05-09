@@ -982,7 +982,9 @@ function api.parse(source, where)
   return (#api.errors == 0), api.errors
 end
 
-function api.parseFile(path)
+function api.parseFile(path, panic)
+  local _panic = api.panic
+  api.panic = (panic ~= nil) and panic or _panic
   path = path:gsub("\\", "/"):gsub("//", "/")
   local f = io.open(path, "r")
   if f then
@@ -992,6 +994,7 @@ function api.parseFile(path)
       return api.parse(source, path)
     end
   end
+  api.panic = _panic
   return false, "could not parse file:"..path
 end
 
@@ -1054,7 +1057,7 @@ for i, v in ipairs(arg) do
       checked = checked + 1
       local out = checked..". "..arg[j]
       print(out)
-      local ok, err = api.parseFile(arg[j])
+      local ok, err = api.parseFile(arg[j], false)
       if not ok and err then
         for _, w in ipairs(err) do
           print(w)
@@ -1067,8 +1070,7 @@ end
 if checked > 0 then
   print('')
   print(checked..' files scanned')
-  print('')
-  print(#errors.." errors found")
+  print(#errors..' errors found')
   os.exit(#errors == 0 and 0 or 1, true)
 end
 
