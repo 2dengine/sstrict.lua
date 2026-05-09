@@ -114,6 +114,10 @@ end
 local lex = {}
 local stx = {}
 local par = {}
+
+--- The API module provides programmatic access to Super Strict.
+-- @module api
+-- @alias api
 local api = {}
 
 -- Tries a number of patterns and returns the longest match
@@ -911,6 +915,9 @@ function par.access(k)
   end
 end
 
+--- Logs the mistake and raises an error when the panic option is enabled.
+-- @tparam string source Error message
+-- @tparam[opt] string line Source code line
 function api.error(what, line)
   line = line or par.line
   local src = api.where or "?"
@@ -925,6 +932,11 @@ function api.error(what, line)
   end
 end
 
+--- Parses the source code string and checks it for mistakes.
+-- @tparam string source Source code string
+-- @tparam[opt] string where File path name
+-- @treturn boolean True if no mistakes were found
+-- @treturn table List of errors or nil
 function api.parse(source, where)
   if not where then
     where = source
@@ -982,6 +994,24 @@ function api.parse(source, where)
   return (#api.errors == 0), api.errors
 end
 
+--- Scans the Lua source code string for mistakes without actually executing any code.
+-- @tparam string source Source code string
+-- @tparam[opt] boolean panic True if an error should be raised on mistakes
+-- @treturn boolean True if no mistakes were encountered
+-- @treturn string String containing the line number and error message
+function api.parseString(source, panic)
+  local _panic = api.panic
+  api.panic = (panic ~= nil) and panic or _panic
+  local ok, err = api.parse(source)
+  api.panic = _panic
+  return ok, err
+end
+
+--- Scans the Lua script file for mistakes without actually executing any code.
+-- @tparam string path File name or path
+-- @tparam[opt] boolean panic True if an error should be raised on mistakes
+-- @treturn boolean True if no mistakes were encountered
+-- @treturn string String containing the line number and error message
 function api.parseFile(path, panic)
   local _panic = api.panic
   api.panic = (panic ~= nil) and panic or _panic

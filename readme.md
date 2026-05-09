@@ -22,7 +22,7 @@ Static analysis is CPU intensive and can potentially slow down your scripts.
 Here is how to scan your Lua script files for mistakes using the "parseFile" function:
 ```Lua
 local ss = require('sstrict')
--- checks the Lua file without throwing error exceptions
+-- checks the Lua file without raising errors
 local ok, err = ss.parseFile('/test.lua', false)
 if not ok and err then
   -- iterate and print errors
