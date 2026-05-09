@@ -36,7 +36,7 @@ Please note that the "parseFile" function only looks for mistakes in the syntax,
 Another option is to write a script that iterates and checks all of the .lua files in your project during development.
 Here is a script that recursively scans all .lua files within a specific directory using the LuaFileSystem module:
 
-```
+```Lua
 local lfs = require('lfs')
 local ss = require('sstrict')
 local function scan(path)
