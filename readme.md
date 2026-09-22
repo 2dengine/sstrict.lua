@@ -207,7 +207,7 @@ Please note that numeric precision is determined by the total significant digits
 
 [Love2D](https://love2d.org/forums)
 
-[unluac]https://github.com/Jeong-Min-Cho/unluac
+[unluac](https://github.com/Jeong-Min-Cho/unluac)
 
 sstrict.lua is not related in any way to the [strict.lua library](https://github.com/google-deepmind/strict/tree/master)
 
