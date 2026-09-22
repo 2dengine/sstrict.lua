@@ -1184,6 +1184,14 @@ function api.require(rpath, ...)
   return _require(rpath, ...)
 end
 
+api.setOptions({
+  panic = true,
+  warning = true,
+  lua = _VERSION,
+  jit = not not _G.jit,
+  precision = 'auto',
+})
+
 -- command line usage
 local errors = {}
 local checked = 0
@@ -1209,14 +1217,6 @@ if checked > 0 then
   print(#errors..' errors found')
   os.exit(#errors == 0 and 0 or 1, true)
 end
-
-api.setOptions({
-  panic = true,
-  warning = true,
-  lua = _VERSION,
-  jit = not not _G.jit,
-  precision = 'auto',
-})
 
 if _G['require'] ~= api.require then
   local func = load and 'load' or 'loadstring'
