@@ -25,15 +25,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]
 
-local precision = 0
-while true do
-  local x = 1 + 10^(-precision)
-  if x == 1 then
-    break
-  end
-  precision = precision + 1
-end
-
 local tokens =
 {
   -- number
@@ -44,6 +35,7 @@ local tokens =
   hex = "0[Xx]%x+",
   hexp1 = "0[Xx]%x+%.?[Pp][%-%+]?%d+",
   hexp2 = "0[Xx]%x-%.%x+[Pp][%-%+]?%d+",
+  -- lua JIT extras
   hex64 = "0[Xx]%x+[Uu]?[Ll][Ll]",
   int64 = "%d+%.?[Uu]?[Ll][Ll]",
   -- string
@@ -75,6 +67,7 @@ local tokens =
   assign = "=",
   comma = ",",
   colon = ":",
+  dcolon = "::",
   semicolon = ";",
   minus = "%-",
   plus = "%+",
@@ -89,27 +82,39 @@ local tokens =
   cat = "%.%.",
   arg = "%.%.%.",
   rop = "[~><=]=",
+  -- binary ops
+  idiv = '//',
+  band = '&',
+  bor = '|',
+  bnot = '~',
+  shl = '<<',
+  shr = '>>',
   -- space
   space = "%s",
 }
 
+local lookup =
+{
+  keyword = {"and","break","do","else","elseif","end","false","for","function","if","in","local","nil","not","or","repeat","return","then","true","until","while","goto"},
+
+  number = {"int","intex","float","floatex","hex","hex64","int64","hexp1","hexp2"},
+  string = {"squo","esquo","dquo","edquo","mstr","mstr1","mstr2","mstr3"},
+  padding = {"space","comment","comment2","ecomment","mc","mc1","mc2","mc3"},
+  sep = {"comma","semicolon"},
+
+  uniop = {"not","minus","hash","bnot"},
+  binop = {"and","or","plus","minus","divide","multiply","percent","caret","gt","lt","dot","cat","rop", "idiv","band","bor","bnot","shl","shr"},
+  literal = {"nil","false","true","number","string","arg"},
+  
+  expression = {"lbracket","lparen","ident","nil","false","true","function","number","string","arg","not","minus","hash"},
+  pexpression = {"colon","lparen","lbracket","string"},
+
+  varaccess = {"lbrace","dot"},
+  stat = {"ident","lparen","do","while","repeat","if","for","function","local","goto","dcolon"},
+}
+
 local ptokens = {}
-for t, p in pairs(tokens) do
-  local q = {}
-  if not p:match("[^%%][%(%)%.%+%-%*%?%[%]%^%$]") and not p:match("%%[acdlpsuwxz]") then
-    -- simple token without matching
-    q[1] = p:gsub("%%(.)", "%1")
-    assert(#q[1] > 0)
-  else
-    -- pattern-matching tokens must begin with ^
-    if p:byte(1) ~= 94 then
-      q[1] = '^'..p
-    end
-    -- include ignored characters around captures
-    q[2] = p:gsub("([^%%])([%(%)])", "%1")
-  end
-  ptokens[t] = q
-end
+local plookup = {}
 
 local lex = {}
 local stx = {}
@@ -190,32 +195,6 @@ function lex.tokenize(source, patterns)
   return found
 end
 
-local lookup =
-{
-  keyword = {"and","break","do","else","elseif","end","false","for","function","if","in","local","nil","not","or","repeat","return","then","true","until","while"},
-  number = {"int","intex","float","floatex","hex","hex64","int64","hexp1","hexp2"},
-  string = {"squo","esquo","dquo","edquo","mstr","mstr1","mstr2","mstr3"},
-  padding = {"space","comment","comment2","ecomment","mc","mc1","mc2","mc3"},
-  sep = {"comma","semicolon"},
-
-  uniop = {"not","minus","hash"},
-  binop = {"and","or","plus","minus","divide","multiply","percent","caret","gt","lt","dot","cat","rop"},
-  literal = {"nil","false","true","number","string","arg"},
-  
-  expression = {"lbracket","lparen","ident","nil","false","true","function","number","string","arg","not","minus","hash"},
-  pexpression = {"colon","lparen","lbracket","string"},
-  varaccess = {"lbrace","dot"},
-  stat = {"ident","lparen","do","while","repeat","if","for","function","local"},
-}
-
-for k, list in pairs(lookup) do
-  local t = {}
-  for _, v in ipairs(list) do
-    t[v] = true
-  end
-  lookup[k] = t
-end
-
 function stx.tableconstructor()
   local t = {}
   local c = 0
@@ -229,7 +208,7 @@ function stx.tableconstructor()
       par.expect("rbrace")
       par.expect("assign")
       stx.expression()
-    elseif par.check("ident") and par.lookahead("assign") then
+    elseif par.check("ident") and par.check("assign", 1) then
       -- ident = exp
       k = par.expect("ident").capture
       par.expect("assign")
@@ -242,11 +221,11 @@ function stx.tableconstructor()
     end
     if k ~= nil then
       if t[k] then
-        api.error("duplicate field '"..k.."' in table constructor")
+        api.warning("duplicate field '"..k.."' in table constructor")
       end
       t[k] = true
     end
-    if par.checklist(lookup.sep) then
+    if par.checklist(plookup.sep) then
       par.nextsym()
     end
   end
@@ -261,10 +240,10 @@ function stx.call(scope)
       par.expect("ident")
     end
     stx.args()
-    if par.checklist(lookup.varaccess) then
+    if par.checklist(plookup.varaccess) then
       scope = stx.varaccess(scope)
     end
-  until not par.checklist(lookup.pexpression)
+  until not par.checklist(plookup.pexpression)
   return scope
 end
 
@@ -280,7 +259,7 @@ function stx.prefixexp()
     local id = par.expect("ident")
     par.access(id.capture)
   end
-  if par.checklist(lookup.varaccess) then
+  if par.checklist(plookup.varaccess) then
     n = stx.varaccess(n)
   end
   return n
@@ -293,17 +272,17 @@ end
 
 function stx.args()
   if par.check("lparen") then
-    -- (explist)
+    -- func(explist)
     par.nextsym()
     if not par.check("rparen") then
       stx.explist()
     end
     par.expect("rparen")
   elseif par.check("lbracket") then
-    -- {tableconstructor}
+    -- func {tableconstructor}
     stx.tableconstructor()
   else
-    -- "string"
+    -- func "string"
     par.expect("string")
   end
   par.funccall = par.mark()
@@ -333,7 +312,7 @@ end
 
 function stx.term()
   local n
-  if par.checklist(lookup.literal) then
+  if par.checklist(plookup.literal) then
     -- number
     local q = par.nextsym()
     local t = q.token
@@ -341,13 +320,13 @@ function stx.term()
       n = tonumber(q.capture)
       -- check if the number is too large
       if n and n + 1 == n then
-        api.error("invalid number value: "..q.capture)
+        api.warning("invalid number value: "..q.capture)
       end
       -- check for too much precision
       local int, frac = q.capture:match("^%-?([0-9]*)%.([0-9]*)$")
       if int and frac then
-        if #int + #frac > precision then
-          api.error("invalid number precision: "..q.capture)
+        if #int + #frac > api.precision then
+          api.warning("invalid number precision: "..q.capture)
         end
       end
 
@@ -366,7 +345,7 @@ function stx.term()
     -- expression
     n = stx.prefixexp()
     -- optional call
-    if par.checklist(lookup.pexpression) then
+    if par.checklist(plookup.pexpression) then
       n = stx.call(n)
     end
   elseif par.check("lbracket") then
@@ -391,7 +370,7 @@ function stx.expoexp()
 end
 
 function stx.unaryexp()
-  if par.checklist(lookup.uniop) then
+  if par.checklist(plookup.uniop) then
     local s = par.nextsym()
     local a = stx.unaryexp()
     local ta = type(a)
@@ -399,17 +378,29 @@ function stx.unaryexp()
       a = -a
     elseif ta == "boolean" and s.token == "not" then
       a = not a
+    elseif ta == "number" and s.token == "bxor" then
+      a = '~'..a
     end
     return a
   end
   return stx.expoexp()
 end
 
-function stx.muldivexp()
+function stx.bitop()
   local a = stx.unaryexp()
-  while par.check("divide") or par.check("multiply") or par.check("percent") do
+  while par.check("idiv") or par.check("band") or par.check("bor") or par.check("bxor") or par.check("shl") or par.check("shr") do
     local s = par.nextsym()
     local b = stx.unaryexp()
+    a = par.runbinop(s, a, b)
+  end
+  return a
+end
+
+function stx.muldivexp()
+  local a = stx.bitop()
+  while par.check("divide") or par.check("multiply") or par.check("percent") do
+    local s = par.nextsym()
+    local b = stx.bitop()
     a = par.runbinop(s, a, b)
   end
   return a
@@ -478,49 +469,17 @@ function stx.explist()
   return n
 end
 
-function stx.varlist()
-  local n = {}
-  local r = {}
-  while true do
-    local var = par.expect("ident")
-    table.insert(n, var)
-    if par.checklist(lookup.varaccess) then
-      var = stx.varaccess(var)
-    else
-      for i = 1, #r do
-        if r[i].capture == var.capture and var.capture ~= '_' then
-          api.error("duplicate variable '"..var.capture.."' on the left-hand side")
-        end
-      end
-      table.insert(r, var)
-    end
-
-
-    if par.check("lparen") or par.check("lbracket") or par.check("colon") then
-      stx.call(var)
-    end
-    if not par.check("comma") then
-      break
-    end
-    par.nextsym()
-  end
-  for _, v in ipairs(n) do
-    par.access(v.capture)
-  end
-  return n
-end
-
 function stx.namelist(kind)
   local n = {}
   while true do
     local id = par.expect("ident")
     for i = 1, #n do
       if n[i].capture == id.capture and id.capture ~= '_' then
-        api.error("duplicate "..kind.." '"..id.capture.."'")
+        api.warning("duplicate "..kind.." '"..id.capture.."'")
       end
     end
     table.insert(n, id)
-    if not (par.check("comma") and par.lookahead("ident")) then
+    if not (par.check("comma") and par.check("ident", 1)) then
       break
     end
     par.nextsym()
@@ -533,6 +492,7 @@ end
 
 function stx.varaccess(scope)
   par.tableaccess = par.mark()
+  -- [ expression1 ][ expression2 ].ident1.ident2
   repeat
     local n
     if par.check("lbrace") then
@@ -546,18 +506,67 @@ function stx.varaccess(scope)
       n = par.expect("ident")
     end
     scope = n
-  until not par.checklist(lookup.varaccess)
+  until not par.checklist(plookup.varaccess)
   return scope
 end
 
+function stx.vararg()
+  local var
+  if par.check("lparen") then
+    par.expect("lparen")
+    stx.expression()
+    par.expect("rparen")
+  else
+    var = par.expect("ident")
+  end
+  if par.checklist(plookup.varaccess) then
+    stx.varaccess(var)
+  end
+  return var
+end
+
 function stx.assignorcall()
-  -- var, var, var, ... = explist
-  local lhs = stx.varlist()
+  local lhs = {}
+  local temp = {}
+  while true do
+    --local var = par.expect("ident")
+    local var = stx.vararg()
+    if var and var.capture then
+      table.insert(lhs, var)
+      
+      if var.capture ~= '_' then
+        if temp[var.capture] then
+          api.warning("duplicate variable '"..var.capture.."' on the left-hand side")
+        end
+        temp[var.capture] = true
+      end
+    end
+
+    --if par.check("lparen") or par.check("lbracket") or par.check("colon") then
+      --stx.call(var)
+    --end
+    if not par.check("comma") then
+      break
+    end
+    par.nextsym()
+  end
+  for _, v in ipairs(lhs) do
+    par.access(v.capture)
+  end
+  
   if par.check("assign") then
+    -- var, var, var, ... = explist
     par.expect("assign")
     local rhs = stx.explist()
     if #lhs < #rhs then
-      api.error("too many values in assignment")
+      api.warning("too many values in assignment")
+    end
+  else
+    if par.check("colon") then
+      stx.call(var)
+    end
+    if par.check('lparen') or par.check('string') or par.check('table') then
+      stx.args()
     end
   end
 end
@@ -567,7 +576,7 @@ function stx.ifcondition()
   stx.expression()
   
   if par.varaccess < i then
-    api.error("constant if/else condition", l)
+    api.warning("constant if/else condition", l)
   end
 
   par.expect("then")
@@ -627,7 +636,7 @@ function stx.repeatloop()
   stx.expression()
 
   if i == j and par.funccall <= j and par.tableaccess <= j then
-    api.error("empty code block", i)
+    api.warning("empty code block", i)
   end
 
   par.pop()
@@ -636,7 +645,7 @@ end
 function stx.forloop()
   par.push()
   par.expect("for")
-  if par.lookahead("comma") or par.lookahead("in") then
+  if par.check("comma", 1) or par.check("in", 1) then
     stx.namelist("lvariable")
     par.expect("in")
     stx.explist()
@@ -695,10 +704,21 @@ function stx.localdef()
       par.nextsym()
       local rhs = stx.explist()
       if #lhs < #rhs then
-        api.error("too many values in assignment")
+        api.warning("too many values in assignment")
       end
     end
   end
+end
+
+function stx.label()
+  par.expect("dcolon")
+  par.expect("ident")
+  par.expect("dcolon")
+end
+
+function stx.gotolabel()
+  par.expect("goto")
+  par.expect("ident")
 end
 
 function stx.stat()
@@ -718,12 +738,17 @@ function stx.stat()
     stx.functiondef()
   elseif par.check("local") then
     stx.localdef()
+  elseif par.check("dcolon") then
+    stx.label()
+  elseif par.check("goto") then
+    stx.gotolabel()
   end
 end
 
 function stx.chunk()
-  while not par.done() and not par.check("return") and not par.check("break") do
-    if par.checklist(lookup.stat) then
+  --while not par.done() and not par.check("return") and not par.check("break") do
+  while not par.done() do
+    if par.checklist(plookup.stat) then
       stx.stat()
     else
       break
@@ -735,12 +760,16 @@ function stx.chunk()
   if par.check("return") then
     par.nextsym()
     par.upvaccess[par.top] = true
-    if par.checklist(lookup.expression) then
+    if par.checklist(plookup.expression) then
       stx.explist()
     end
   elseif par.check("break") then
     par.nextsym()
     par.upvaccess[par.top] = true
+  end
+  -- skip all labels after the break/return
+  while par.check("dcolon") do
+    stx.label()
   end
   if par.check("semicolon") then
     par.nextsym()
@@ -752,7 +781,7 @@ function stx.block()
   stx.chunk()
   
   if par.mark() > i and not par.upvaccess[par.top] then
-    api.error("unnecessary code block")
+    api.warning("unnecessary code block")
   end
 end
 
@@ -761,7 +790,7 @@ function stx.neblock()
   stx.block()
 
   if par.mark() == i then
-    api.error("empty code block")
+    api.warning("empty code block")
   end
 end
 
@@ -821,17 +850,14 @@ function par.expect(a)
   return sym
 end
 
-function par.lookahead(a)
-  local s = par.stream[par.index + 1]
-  return s and s.token == a
-end
-
-function par.check(a)
-  local sym = par.stream[par.index]
+function par.check(a, offset)
+  offset = offset or 0
+  local sym = par.stream[par.index + offset]
   return sym and sym.token == a
 end
 
-function par.checklist(t)
+function par.checklist(t, offset)
+  offset = offset or 0
   local sym = par.stream[par.index]
   return sym and t[ sym.token ]
 end
@@ -866,7 +892,7 @@ function par.pop()
   for k, v in pairs(old) do
     if v.refs == 0 and k ~= "_" then
       if (v.kind == "lvariable") or (v.kind == "variable" and v.list and v.list.refs == 0) then
-        api.error("unused variable '"..k.."'", v.line)
+        api.warning("unused variable '"..k.."'", v.line)
       end
     end
   end
@@ -879,7 +905,7 @@ function par.define(s, k, l)
     return
   end
   if par.top[id] and k ~= "class" then
-    api.error("variable name '"..id.."' redefinition")
+    api.warning("variable name '"..id.."' redefinition")
   end
   s.refs = 0
   s.kind = k
@@ -911,11 +937,11 @@ function par.access(k)
       end
     end
   else
-    api.error("undefined variable '"..k.."'")
+    api.warning("undefined variable '"..k.."'")
   end
 end
 
---- Logs the mistake and raises an error when the panic option is enabled.
+--- Logs severe mistakes and raises an error when the panic option is enabled.
 -- @tparam string what Error message
 -- @tparam[opt] string line Source code line
 function api.error(what, line)
@@ -930,6 +956,16 @@ function api.error(what, line)
   if api.panic then
     error("\n"..src..": "..what)
   end
+end
+
+--- Logs minor mistakes and raises an error when the panic option is enabled.
+-- @tparam string what Warning message
+-- @tparam[opt] string line Source code line
+function api.warning(what, line)
+  if api.warnings == false then
+    return
+  end
+  return api.error(what, line)
 end
 
 --- Parses the source code string and checks it for mistakes.
@@ -965,12 +1001,12 @@ function api.parse(source, where)
   local stream = {}
   local j = 1
   for _, v in ipairs(lex.tokenize(source, ptokens)) do
-    if not lookup.padding[ v.token ] then
+    if not plookup.padding[ v.token ] then
       stream[j] = v
       j = j + 1
     --else
       --if v.capture:find("[Tt][Oo][Dd][Oo][^%a]") then
-        --api.error("detected 'todo' in comment", v.line)
+        --api.warning("detected 'todo' in comment", v.line)
       --end
     end
   end
@@ -979,12 +1015,12 @@ function api.parse(source, where)
   for _, t in ipairs(stream) do
     local k = t.token
     if k == "ident" then
-      if lookup.keyword[ t.capture ] then
+      if plookup.keyword[ t.capture ] then
         t.token = t.capture
       end
-    elseif lookup.number[k] then
+    elseif plookup.number[k] then
       t.token = "number"
-    elseif lookup.string[k] then
+    elseif plookup.string[k] then
       t.token = "string"
     end
   end
@@ -1001,7 +1037,6 @@ end
 -- @treturn string String containing the line number and error message
 function api.parseString(source, panic)
   local _panic = api.panic
-  api.panic = (panic ~= nil) and panic or _panic
   local ok, err = api.parse(source)
   api.panic = _panic
   return ok, err
@@ -1012,9 +1047,7 @@ end
 -- @tparam[opt] boolean panic True if an error should be raised on mistakes
 -- @treturn boolean True if no mistakes were encountered
 -- @treturn string String containing the line number and error message
-function api.parseFile(path, panic)
-  local _panic = api.panic
-  api.panic = (panic ~= nil) and panic or _panic
+function api.parseFile(path)
   path = path:gsub("\\", "/"):gsub("//", "/")
   local f = io.open(path, "r")
   if f then
@@ -1024,8 +1057,94 @@ function api.parseFile(path, panic)
       return api.parse(source, path)
     end
   end
-  api.panic = _panic
   return false, "could not parse file:"..path
+end
+
+function api.setOptions(ops)
+  if ops.panic ~= nil then
+    api.panic = ops.panic == true
+  end
+  if ops.warnings ~= nil then
+    api.warnings = ops.warnings == true
+  end
+  if ops.precision then
+    local p = ops.precision
+    if p == 'auto' then
+      p = 0
+      while true do
+        local x = 1 + 10^(-p)
+        if x == 1 then
+          break
+        end
+        p = p + 1
+      end
+    end
+    p = tonumber(p)
+    assert(p, "invalid precision in options: '"..ops.precision.."'")
+    api.precision = p
+  end
+  if ops.jit then
+    api.jit = ops.jit == true
+  end
+  if ops.lua then
+    api.lua = ops.lua
+    local ver = ops.lua:match("5%.%d+") or '5.2'
+    ver = ver:gsub('%.', '')
+    ver = tonumber(ver) or 51
+    
+    local ignore_lexemes = {}
+    local ignore_tokens = {}
+    -- ignore JIT extras
+    if not api.jit then
+      ignore_lexemes['hex64'] = true
+      ignore_lexemes['int64'] = true
+    end
+    -- ignore goto operator
+    if ver <= 51 then
+      ignore_lexemes['dcolon'] = true
+      ignore_tokens['goto'] = true
+    end
+    if ver <= 52 then
+      ignore_lexemes['idiv'] = true
+      ignore_lexemes['band'] = true
+      ignore_lexemes['bor'] = true
+      ignore_lexemes['bxor'] = true
+      ignore_lexemes['shl'] = true
+      ignore_lexemes['shr'] = true
+    end
+    -- build allowed tokens table
+    ptokens = {}
+    for t, p in pairs(tokens) do
+      if not ignore_lexemes[t] then
+        local q = {}
+        if not p:match("[^%%][%(%)%.%+%-%*%?%[%]%^%$]") and not p:match("%%[acdlpsuwxz]") then
+          -- simple token without matching
+          q[1] = p:gsub("%%(.)", "%1")
+          assert(#q[1] > 0)
+        else
+          -- pattern-matching tokens must begin with ^
+          if p:byte(1) ~= 94 then
+            q[1] = '^'..p
+          end
+          -- include ignored characters around captures
+          q[2] = p:gsub("([^%%])([%(%)])", "%1")
+        end
+        ptokens[t] = q
+      end
+    end
+    
+    -- build lookup table
+    plookup = {}
+    for k, list in pairs(lookup) do
+      local t = {}
+      for _, v in ipairs(list) do
+        if not ignore_tokens[v] then
+          t[v] = true
+        end
+      end
+      plookup[k] = t
+    end
+  end
 end
 
 local _loadstring = _G.loadstring or _G.load
@@ -1104,8 +1223,13 @@ if checked > 0 then
   os.exit(#errors == 0 and 0 or 1, true)
 end
 
---local _, var = ...
-api.panic = true --(var == nil)
+api.setOptions({
+  panic = true,
+  warning = true,
+  lua = _VERSION,
+  jit = not not _G.jit,
+  precision = 'auto',
+})
 
 if _G['require'] ~= api.require then
   local func = load and 'load' or 'loadstring'

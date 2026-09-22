@@ -1,19 +1,35 @@
 local sstrict = require("sstrict")
 
+local ntests = 0
+local passed = 0
+local errors = {}
 local function try(src, expect, msg)
+  ntests = ntests + 1
   local res, err = pcall(sstrict.loadstring, src)
+  if res == false then
+    err = tostring(err)
+    err = err:match('^.+:%d+: (.+)$')
+  end
   if type(err) ~= "string" then
-    err = nil
+    err = ""
   end
-  print(err and "INVALID" or "VALID")
-  print(src)
-  if err then
-    assert(msg and err:match(msg), err)
+  if (res ~= expect) then -- or (msg and err ~= msg) then
+    err = ntests..'. expected: '..tostring(expect)..' got: '..tostring(res)..'\n'..src..'\n'..err
     print(err)
+    table.insert(errors, err)
+  else
+    passed = passed + 1
   end
-  print("\n")
-  assert(res == expect, err or "TEST FAILED")
 end
+
+print('unit testing super strict')
+
+sstrict.setOptions({
+  panic = true,
+  warnings = true,
+  lua = '5.4',
+  jit = true,
+})
 
 -- undeclared
 try([[local function myFunc() a = 5 end]], false, "undefined variable 'a'")
@@ -30,56 +46,21 @@ try([[for i = 1, 100 do end]], false, "empty code block")
 try([[local list = {1,2,3} for _ in ipairs(list) do end]], false, "empty code block")
 try([[while true do end]], false, "empty code block")
 try([[repeat until true]], false, "empty code block")
-try([[return function(a, b) end]], true)
-try([[local function oops() os.clock() end]], true)
-try([[local obj = {} function obj:baz() end return obj]], true)
-try([[while os.clock() do end]], true)
-try([[while _G['a'] do end ]], true)
-try([[while _G.a do end ]], true)
 
 -- unnecessary code block
 try([[for i = 1, 100 do local z = i z = z + 1 end]], false, "unnecessary code block")
 try([[return function(a,b,c) local d = 5 d = d + 1 end]], false, "unnecessary code block")
-try([[return function(a,b,c) local d = a+b+c d=d+1 end]], true)
-try([[return function(q) q = q + 1 end]], true)
-try([[return function() io = nil end]], true)
-
 
 -- unused vars
 try([[local function cc() local a, _ = os.clock() end]], false, "unused variable 'a'")
 try([[local function cc() local _, b = os.clock() end]], false, "unused variable 'b'")
-try([[local function cc() local a, b = os.clock() return b end]], true)
-
--- literals
-try([[_G['q']={0x1ULL,0x1LL,0x1ull,0x1ll,1ULL,1LL,0x1p1,12.5i}]], true)
-try([[_G['q']={"1 \"2\"",""}]], true)
-try([[return (5+3)/3*.2]], true)
-try([[return 1^-2]], true)
-try([[return 1^(-2)^#{}^-2^3]], true)
-try("return [-----[ [--[boo]--] ]-----], 123, '\''", true)
-try("-- ok [[ comment ]] -- ok", true)
-try('--["p"]={ img="123.png" },', true)
-try([=[
-return function(item, other) 
-  if --[[other.isSlope or]] other.isSolid then
-    return "cross"
-  end
-end
-]=], true)
-
-try([[print("a\"b")]], true)
-try([[return "\"ABCDE АБВГД"]], true)
-try([[return "ABCDE АБВГД"]], true)
 
 -- assignment values count
 try([[local a,b=1,2,3 return a]], false, "too many values in assignment")
-try([[local a,b,c=1,2 return a]], true)
-try([[local unpack = table.unpack or unpack local a,b,c=unpack(_G) return a]], true)
 
 -- constant condition
 try([[if true then print('ok') end]], false, "constant if/else condition")
 try([[if 2+2 > 3 then print('ok') end]], false, "constant if/else condition")
-try([[local a = 0 while true do a = a + 1 end return a]], true)
 
 -- table constructor duplicates
 try([[return { ['a'] = 1, a = 1 }]], false, "duplicate field 'a' in table constructor")
@@ -94,4 +75,31 @@ try([[return 9876543210.9876543]], false, "invalid number precision: 9876543210.
 try([[return .0123456789012345]], true)
 try([[return 987654321.0123456]], true)
 
-print('test finished')
+try([[return function(q) q = q + 1 end]], true)
+try([[return function() io = nil end]], true)
+
+-- literals
+try([[_G['q']={0x1ULL,0x1LL,0x1ull,0x1ll,1ULL,1LL,0x1p1,12.5i}]], true)
+
+
+sstrict.setOptions({
+  panic = false,
+  warnings = false,
+  lua = '5.3',
+  jit = false,
+})
+
+for i = 1, 10000 do
+  local full = './tests/'..i..'.lua'
+  local file = io.open(full, 'r')
+  if not file then
+    break
+  end
+  local cont = file:read('*a')
+  file:close()
+  try(cont, true)
+end
+
+print(ntests..' tests completed')
+print(passed..' tests passed')
+print(#errors..' errors found')

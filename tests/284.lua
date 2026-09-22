@@ -1,0 +1,1 @@
+local unpack = table.unpack or unpack local a,b,c=unpack(_G) return a
