@@ -511,7 +511,6 @@ function stx.varaccess(scope)
 end
 
 function stx.vararg()
-  local path = {}
   local var
   if par.check("lparen") then
     par.expect("lparen")
