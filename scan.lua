@@ -4,6 +4,7 @@ _G.ffi = _G.ffi or {}
 
 local lfs = require('lfs')
 local ss = require('sstrict')
+ss.setOptions({ panic = false })
 
 print('scanning...')
 
@@ -23,7 +24,7 @@ local function scan(path)
       elseif attr.mode == 'file' then
         if file:match('%.lua$') then
           checked = checked + 1
-          local ok, err = ss.parseFile(full, false)
+          local ok, err = ss.parseFile(full)
           print(checked..". "..full)
           if not ok and err then
             for _, v in ipairs(err) do
