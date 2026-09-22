@@ -563,7 +563,7 @@ function stx.assignorcall()
     end
   else
     if par.check("colon") then
-      stx.call(var)
+      stx.call()
     end
     if par.check('lparen') or par.check('string') or par.check('table') then
       stx.args()
