@@ -200,12 +200,14 @@ Numeric precision may vary depending on how your Lua interpreter was compiled.
 For 64-bit versions of Lua, the precision is about 15-16 digits.
 Please note that numeric precision is determined by the total significant digits, not just digits after the decimal point.
 
-## Credits
+## Credits and Testing
 [grump](https://github.com/megagrump)
 
 [pgimeno](https://love2d.org/forums/memberlist.php?mode=viewprofile&u=137168)
 
 [Love2D](https://love2d.org/forums)
+
+[Jeong-Min-Cho]https://github.com/Jeong-Min-Cho/unluac
 
 sstrict.lua is not related in any way to the [strict.lua library](https://github.com/google-deepmind/strict/tree/master)
 
