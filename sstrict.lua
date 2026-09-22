@@ -511,16 +511,18 @@ function stx.varaccess(scope)
 end
 
 function stx.vararg()
+  local path = {}
   local var
   if par.check("lparen") then
     par.expect("lparen")
-    stx.expression()
+    var = stx.expression()
     par.expect("rparen")
   else
     var = par.expect("ident")
+    par.access(var.capture)
   end
   if par.checklist(plookup.varaccess) then
-    stx.varaccess(var)
+    stx.varaccess()
   end
   return var
 end
@@ -529,29 +531,18 @@ function stx.assignorcall()
   local lhs = {}
   local temp = {}
   while true do
-    --local var = par.expect("ident")
     local var = stx.vararg()
-    if var and var.capture then
-      table.insert(lhs, var)
-      
-      if var.capture ~= '_' then
-        if temp[var.capture] then
-          api.warning("duplicate variable '"..var.capture.."' on the left-hand side")
-        end
-        temp[var.capture] = true
+    table.insert(lhs, var)
+    if var and var ~= '_' then
+      if temp[var] then
+        api.warning("duplicate variable '"..var.."' on the left-hand side")
       end
+      temp[var] = true
     end
-
-    --if par.check("lparen") or par.check("lbracket") or par.check("colon") then
-      --stx.call(var)
-    --end
     if not par.check("comma") then
       break
     end
     par.nextsym()
-  end
-  for _, v in ipairs(lhs) do
-    par.access(v.capture)
   end
   
   if par.check("assign") then
@@ -1035,11 +1026,8 @@ end
 -- @tparam[opt] boolean panic True if an error should be raised on mistakes
 -- @treturn boolean True if no mistakes were encountered
 -- @treturn string String containing the line number and error message
-function api.parseString(source, panic)
-  local _panic = api.panic
-  local ok, err = api.parse(source)
-  api.panic = _panic
-  return ok, err
+function api.parseString(source)
+  return api.parse(source)
 end
 
 --- Scans the Lua script file for mistakes without actually executing any code.

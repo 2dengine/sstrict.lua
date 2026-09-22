@@ -1,18 +1,22 @@
 local sstrict = require("sstrict")
 
+sstrict.setOptions({
+  panic = true,
+  warnings = true,
+  lua = '5.4',
+  jit = true,
+})
+
 local ntests = 0
 local passed = 0
 local errors = {}
 local function try(src, expect, msg)
   ntests = ntests + 1
-  local res, err = pcall(sstrict.loadstring, src)
-  if res == false then
-    err = tostring(err)
-    err = err:match('^.+:%d+: (.+)$')
+  local res, err = sstrict.parseString(src)
+  if res == false or type(err) == "table" then
+    err = table.concat(err, "\n")
   end
-  if type(err) ~= "string" then
-    err = ""
-  end
+  err = tostring(err)
   if (res ~= expect) then -- or (msg and err ~= msg) then
     err = ntests..'. expected: '..tostring(expect)..' got: '..tostring(res)..'\n'..src..'\n'..err
     print(err)
@@ -25,7 +29,7 @@ end
 print('unit testing super strict')
 
 sstrict.setOptions({
-  panic = true,
+  panic = false,
   warnings = true,
   lua = '5.4',
   jit = true,
@@ -57,6 +61,10 @@ try([[local function cc() local _, b = os.clock() end]], false, "unused variable
 
 -- assignment values count
 try([[local a,b=1,2,3 return a]], false, "too many values in assignment")
+try([[local a,a=1,2]], false)
+try([[local t = {} t.a,t.b=1,2 return t]], true)
+-- todo: we fail to catch the following mistake
+try([[local t = {} t.a,t.a=1,2 return t]], true)
 
 -- constant condition
 try([[if true then print('ok') end]], false, "constant if/else condition")
@@ -80,7 +88,6 @@ try([[return function() io = nil end]], true)
 
 -- literals
 try([[_G['q']={0x1ULL,0x1LL,0x1ull,0x1ll,1ULL,1LL,0x1p1,12.5i}]], true)
-
 
 sstrict.setOptions({
   panic = false,
