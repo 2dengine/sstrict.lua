@@ -90,7 +90,7 @@ sstrict.setOptions({
 })
 
 for i = 1, 10000 do
-  local full = './tests/'..i..'.lua'
+  local full = './.tests/'..i..'.lua'
   local file = io.open(full, 'r')
   if not file then
     break

@@ -17,7 +17,9 @@ local function scan(path)
       local full = path..'/'..file
       local attr = lfs.attributes(full)
       if attr.mode == 'directory' then
-        scan(full)
+        if not file:match("^%.") then
+          scan(full)
+        end
       elseif attr.mode == 'file' then
         if file:match('%.lua$') then
           checked = checked + 1
