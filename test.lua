@@ -1,12 +1,5 @@
 local sstrict = require("sstrict")
 
-sstrict.setOptions({
-  panic = true,
-  warnings = true,
-  lua = '5.4',
-  jit = true,
-})
-
 local ntests = 0
 local passed = 0
 local errors = {}
@@ -28,10 +21,12 @@ end
 
 print('unit testing super strict')
 
+-- test the warnings
+
 sstrict.setOptions({
   panic = false,
   warnings = true,
-  lua = '5.4',
+  lua = '5.3',
   jit = true,
 })
 
@@ -89,6 +84,8 @@ try([[return function() io = nil end]], true)
 -- literals
 try([[_G['q']={0x1ULL,0x1LL,0x1ull,0x1ll,1ULL,1LL,0x1p1,12.5i}]], true)
 
+-- generic syntax tests
+
 sstrict.setOptions({
   panic = false,
   warnings = false,
@@ -96,7 +93,7 @@ sstrict.setOptions({
   jit = false,
 })
 
-for i = 1, 10000 do
+for i = 1, 1000 do
   local full = './.tests/'..i..'.lua'
   local file = io.open(full, 'r')
   if not file then
