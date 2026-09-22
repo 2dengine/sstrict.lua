@@ -22,8 +22,9 @@ Static analysis is CPU intensive and can potentially slow down your scripts.
 Here is how to scan your Lua script files for mistakes using the "setOptions" and "parseFile" functions:
 ```Lua
 local ss = require('sstrict')
+-- do not raise errors during parsing
 ss.setOptions({ panic = false })
--- checks the Lua file without raising errors
+-- parse a specific file
 local ok, err = ss.parseFile('./test.lua')
 if not ok and err then
   -- iterate and print errors
@@ -33,7 +34,7 @@ if not ok and err then
 end
 ```
 "parseFile" accepts both absolute and relative file paths, so you may need to make adjustments depending on your environment.
-"setOptions({ panic = false })" tells Super Strict to continue parsing even any mistakes are encountered.
+"setOptions({ panic = false })" tells Super Strict to continue parsing the current file even any mistakes are encountered.
 Please note that Super Strict only looks for mistakes in the syntax, but does not actually execute any Lua code.
 
 Another option is to write a script that iterates and checks all of the .lua files in your project during development.

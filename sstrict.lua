@@ -1022,7 +1022,6 @@ end
 
 --- Scans the Lua source code string for mistakes without actually executing any code.
 -- @tparam string source Source code string
--- @tparam[opt] boolean panic True if an error should be raised on mistakes
 -- @treturn boolean True if no mistakes were encountered
 -- @treturn string String containing the line number and error message
 function api.parseString(source)
@@ -1031,7 +1030,6 @@ end
 
 --- Scans the Lua script file for mistakes without actually executing any code.
 -- @tparam string path File name or path
--- @tparam[opt] boolean panic True if an error should be raised on mistakes
 -- @treturn boolean True if no mistakes were encountered
 -- @treturn string String containing the line number and error message
 function api.parseFile(path)
@@ -1047,6 +1045,8 @@ function api.parseFile(path)
   return false, "could not parse file:"..path
 end
 
+--- Configures how Super Strict works.
+-- @tparam table ops Options table containing the following fields: "panic", "warnings", "precision", "jit" and "lua"
 function api.setOptions(ops)
   if ops.panic ~= nil then
     api.panic = ops.panic == true
