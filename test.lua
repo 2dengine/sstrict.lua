@@ -81,6 +81,8 @@ try([[return 987654321.0123456]], true)
 try([[return function(q) q = q + 1 end]], true)
 try([[return function() io = nil end]], true)
 
+try([[_G.loader = nil require(_G.loader)() return _G.loader]], true)
+
 -- literals
 try([[_G['q']={0x1ULL,0x1LL,0x1ull,0x1ll,1ULL,1LL,0x1p1,12.5i}]], true)
 
