@@ -552,7 +552,8 @@ function stx.assignorcall()
       api.warning("too many values in assignment")
     end
   else
-    if par.check("colon") or par.check("lparen") then
+    --if par.check("colon") then
+    if par.checklist(plookup.pexpression) then
       stx.call()
     end
     if par.check('lparen') or par.check('string') or par.check('table') then
