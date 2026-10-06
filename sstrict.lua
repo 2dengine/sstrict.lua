@@ -1202,7 +1202,7 @@ for i, v in ipairs(arg) do
       checked = checked + 1
       local out = checked..". "..arg[j]
       print(out)
-      local ok, err = api.parseFile(arg[j], false)
+      local ok, err = api.parseFile(arg[j])
       if not ok and err then
         for _, w in ipairs(err) do
           print(w)
